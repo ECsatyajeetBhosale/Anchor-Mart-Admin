@@ -1,0 +1,10 @@
+#!/bin/sh
+# .husky/pre-commit
+#
+# This script runs automatically before every git commit.
+# If it exits with a non-zero code, the commit is blocked.
+#
+# It runs lint-staged, which applies Biome formatting + linting
+# only to the files you are about to commit (fast!).
+
+npx lint-staged

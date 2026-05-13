@@ -1,0 +1,36 @@
+/*
+ * index.css
+ *
+ * Global stylesheet — loaded once in main.tsx.
+ *
+ * Tailwind CSS v4 only needs this one import directive.
+ * No tailwind.config.js or postcss.config.js needed.
+ * All theme customisation is done with CSS variables below.
+ */
+
+@import "tailwindcss";
+
+/*
+ * ─── Custom theme tokens ────────────────────────────────────────────────────
+ * Extend the default Tailwind theme here using CSS custom properties.
+ * Example: add a new colour, font, or spacing value.
+ *
+ * @theme {
+ *   --color-brand: oklch(60% 0.2 240);
+ * }
+ */
+
+/*
+ * ─── Base styles ────────────────────────────────────────────────────────────
+ * Global styles applied to HTML elements.
+ */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
