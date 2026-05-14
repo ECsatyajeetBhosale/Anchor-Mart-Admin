@@ -6,7 +6,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth";
 import { APP_ROUTES } from "@/lib/constants";
 import { APP_TEXT } from "@/lib/messages";

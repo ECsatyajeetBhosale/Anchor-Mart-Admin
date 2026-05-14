@@ -14,8 +14,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { APP_ROUTES } from "@/lib/constants";
 import { APP_TEXT } from "@/lib/messages";

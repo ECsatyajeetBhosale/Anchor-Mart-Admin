@@ -15,12 +15,26 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { AuthState, LoginResponse } from "../types/auth.types";
 
 const storedToken = localStorage.getItem("token");
+const storedUser = localStorage.getItem("user");
+
+const parseStoredUser = (): AuthState["user"] => {
+  if (!storedUser) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedUser) as AuthState["user"];
+  } catch {
+    localStorage.removeItem("user");
+    return null;
+  }
+};
 
 // The initial state — user is logged out by default
 const initialState: AuthState = {
   isLoggedIn: Boolean(storedToken),
   token: storedToken,
-  user: null,
+  user: parseStoredUser(),
 };
 
 const authSlice = createSlice({
@@ -37,6 +51,11 @@ const authSlice = createSlice({
 
       // Also persist the token in localStorage so it survives page refresh
       localStorage.setItem("token", action.payload.token);
+      if (action.payload.user) {
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+      } else {
+        localStorage.removeItem("user");
+      }
     },
 
     // Called when the user clicks "Logout"
@@ -47,6 +66,7 @@ const authSlice = createSlice({
       state.user = null;
 
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
 });

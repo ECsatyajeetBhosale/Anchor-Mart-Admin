@@ -8,14 +8,19 @@
  *   - If logged out → shows a Login link
  */
 
+import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { logout, useAuth } from "@/features/auth";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { APP_ROUTES } from "@/lib/constants";
 import { APP_TEXT } from "@/lib/messages";
 
-export function Header() {
+type HeaderProps = {
+  leftSlot?: ReactNode;
+};
+
+export function Header({ leftSlot }: HeaderProps) {
   const { isLoggedIn, user } = useAuth();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -28,18 +33,22 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-        {/* App name / logo */}
-        <Link
-          to={APP_ROUTES.HOME}
-          className="text-xl font-bold text-blue-600 tracking-tight hover:text-blue-700 transition-colors"
-        >
-          {APP_TEXT.BRAND_NAME}
-        </Link>
+    <header className="sticky top-0 z-10 h-16 border-b border-gray-200 bg-white/80 backdrop-blur-sm rounded-xl">
+      <div className="flex h-full w-full items-center justify-between gap-4 px-2 sm:px-4">
+        <div className="flex min-w-0 items-center gap-2">
+          {leftSlot}
+
+          {/* App name / logo */}
+          <Link
+            to={APP_ROUTES.HOME}
+            className="truncate text-xl font-bold text-gray-950 tracking-tight hover:text-gray-700 transition-colors"
+          >
+            {/* {APP_TEXT.BRAND_NAME} */}
+          </Link>
+        </div>
 
         {/* Right side — auth actions */}
-        <nav className="flex items-center gap-4">
+        <nav className="flex shrink-0 items-center gap-4">
           {isLoggedIn ? (
             <>
               <span className="text-sm text-gray-600">
@@ -53,7 +62,7 @@ export function Header() {
           ) : (
             <Link
               to={APP_ROUTES.LOGIN}
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-sm font-medium text-gray-700 hover:text-gray-950 transition-colors"
             >
               {APP_TEXT.AUTH.SIGN_IN}
             </Link>

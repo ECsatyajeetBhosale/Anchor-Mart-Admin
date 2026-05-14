@@ -13,18 +13,27 @@
  */
 
 import { Outlet } from "react-router-dom";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Header } from "./Header";
 
 export function Layout() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Persistent top navigation */}
-      <Header />
+    <TooltipProvider>
+      <SidebarProvider>
+        <AppSidebar />
 
-      {/* Page content — React Router renders the matching child route here */}
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-8">
-        <Outlet />
-      </main>
-    </div>
+        <SidebarInset>
+          {/* Persistent top navigation */}
+          <Header leftSlot={<SidebarTrigger className="-ml-1" />} />
+
+          {/* Page content — React Router renders the matching child route here */}
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+            <Outlet />
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }
