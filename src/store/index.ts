@@ -12,6 +12,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "@/features/auth/api/authApi";
 import authReducer from "@/features/auth/slice/authSlice";
+import { couponsApi } from "@/features/coupons/api/couponsApi";
+import { dashboardApi } from "@/features/dashboard/api/dashboardApi";
 
 export const store = configureStore({
   reducer: {
@@ -21,11 +23,17 @@ export const store = configureStore({
     // Server state — managed by RTK Query
     // The key must match the `reducerPath` defined in createApi()
     [authApi.reducerPath]: authApi.reducer,
+    [dashboardApi.reducerPath]: dashboardApi.reducer,
+    [couponsApi.reducerPath]: couponsApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
     // RTK Query middleware enables caching, invalidation, and polling
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware().concat(
+      authApi.middleware,
+      dashboardApi.middleware,
+      couponsApi.middleware,
+    ),
 });
 
 // ─── TypeScript helpers ───────────────────────────────────────────────────────

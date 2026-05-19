@@ -30,6 +30,15 @@ export const APP_TEXT = {
       `You are signed in as ${email ?? APP_TEXT.AUTH.ACCOUNT_FALLBACK}. Ready to build something great!`,
   },
 
+  DASHBOARD: {
+    PENDING_INTENTS: "Pending Intents",
+    SPECIAL_INTEREST_PRODUCTS: "Special Interest Products",
+    SILENT_ALERTS: "Silent Alerts",
+    ACTIVE_ORDERS_TODAY: "Active Orders Today",
+    LOADING: "Loading...",
+    ERROR: "Failed to load dashboard data. Please try again.",
+  },
+
   VALIDATION: {
     EMAIL_REQUIRED: "Email is required",
     EMAIL_INVALID: "Please enter a valid email address",

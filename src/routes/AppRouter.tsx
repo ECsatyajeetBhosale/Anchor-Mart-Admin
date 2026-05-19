@@ -14,8 +14,9 @@
 
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/common/Layout";
+import { CouponsPage } from "@/features/coupons/components/CouponsPage";
 import { APP_ROUTES } from "@/lib/constants";
-import { HomePage } from "@/pages/HomePage";
+import { DashboardPage } from "@/pages/DashboardPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
@@ -28,7 +29,9 @@ export function AppRouter() {
       */}
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route path={APP_ROUTES.HOME} element={<HomePage />} />
+          <Route path={APP_ROUTES.HOME} element={<DashboardPage />} />
+          <Route path={APP_ROUTES.DASHBOARD} element={<DashboardPage />} />
+          <Route path={APP_ROUTES.COUPONS} element={<CouponsPage />} />
         </Route>
       </Route>
 

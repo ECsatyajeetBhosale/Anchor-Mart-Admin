@@ -29,7 +29,7 @@ export function Layout() {
           <Header leftSlot={<SidebarTrigger className="-ml-1" />} />
 
           {/* Page content — React Router renders the matching child route here */}
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+          <main className="mx-auto w-full flex-1 px-2 py-4">
             <Outlet />
           </main>
         </SidebarInset>

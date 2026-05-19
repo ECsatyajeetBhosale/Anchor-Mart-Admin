@@ -5,12 +5,12 @@ import {
   BoxesIcon,
   HomeIcon,
   LifeBuoyIcon,
-  PackageIcon,
   SendIcon,
   Settings2Icon,
   ShoppingCartIcon,
   StoreIcon,
   TagsIcon,
+  TicketIcon,
   UsersIcon,
 } from "lucide-react";
 import type * as React from "react";
@@ -36,23 +36,9 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: APP_ROUTES.HOME,
+      url: APP_ROUTES.DASHBOARD,
       icon: <HomeIcon />,
       isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: APP_ROUTES.HOME,
-        },
-        {
-          title: "Analytics",
-          url: "#",
-        },
-        {
-          title: "Reports",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Orders",
@@ -74,23 +60,9 @@ const data = {
       ],
     },
     {
-      title: "Catalog",
-      url: "#",
-      icon: <PackageIcon />,
-      items: [
-        {
-          title: "Products",
-          url: "#",
-        },
-        {
-          title: "Categories",
-          url: "#",
-        },
-        {
-          title: "Inventory",
-          url: "#",
-        },
-      ],
+      title: "Coupons",
+      url: APP_ROUTES.COUPONS,
+      icon: <TicketIcon />,
     },
     {
       title: "Settings",

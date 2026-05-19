@@ -96,8 +96,11 @@ export const authApi = createApi({
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
       if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+        // Backend expects "Token" scheme (not "Bearer")
+        headers.set("Authorization", `Token ${token}`);
       }
+      // Required for ngrok to bypass the interstitial browser warning
+      headers.set("ngrok-skip-browser-warning", "true");
       return headers;
     },
   }),
