@@ -4,9 +4,6 @@ import {
   BarChart3Icon,
   BoxesIcon,
   HomeIcon,
-  LifeBuoyIcon,
-  SendIcon,
-  Settings2Icon,
   ShoppingCartIcon,
   StoreIcon,
   TagsIcon,
@@ -64,34 +61,8 @@ const data = {
       url: APP_ROUTES.COUPONS,
       icon: <TicketIcon />,
     },
-    {
-      title: "Settings",
-      url: "#",
-      icon: <Settings2Icon />,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-      ],
-    },
   ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: <LifeBuoyIcon />,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: <SendIcon />,
-    },
-  ],
+  navSecondary: [],
   projects: [
     {
       name: "Customers",

@@ -19,6 +19,7 @@ export const APP_ROUTES = {
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
   COUPONS: "/coupons",
+  NOTIFICATIONS: "/notifications",
 } as const;
 
 // ─── API endpoint paths (relative to VITE_API_BASE_URL) ──────────────────────

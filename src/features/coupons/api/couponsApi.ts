@@ -5,12 +5,8 @@ export const couponsApi = createApi({
   reducerPath: "couponsApi",
 
   baseQuery: fetchBaseQuery({
-    // Use relative URL in development (proxied by Vite)
-    // Use full URL in production (from .env)
-    baseUrl:
-      import.meta.env.MODE === "development"
-        ? "" // Relative URL - proxied by Vite dev server
-        : import.meta.env.VITE_API_BASE_URL,
+    // Always use the configured backend base URL instead of the Vite dev server origin.
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
 
     // Attach the auth token to every request
     prepareHeaders: (headers) => {
@@ -162,17 +158,43 @@ export const couponsApi = createApi({
 
     // Create new coupon
     createCoupon: builder.mutation<Coupon, FormData>({
-      query: (payload) => ({
-        url: "api/superadmin/orders/coupons",
-        method: "POST",
-        body: payload,
-      }),
+      query: (payload) => {
+        console.log("Coupons API: Creating coupon with payload:");
+        for (const [key, value] of payload.entries()) {
+          console.log(
+            `  ${key}:`,
+            value instanceof File ? `File(${value.name}, ${value.size} bytes)` : value,
+          );
+        }
+        return {
+          url: "api/superadmin/orders/coupons/add/",
+          method: "POST",
+          body: payload,
+        };
+      },
+      transformResponse: (response: unknown) => {
+        console.log("Coupons API: Create coupon success response:", response);
+        return response as Coupon;
+      },
+      transformErrorResponse: (response) => {
+        console.error("Coupons API: Create coupon error response", {
+          status: response.status,
+          data: response.data,
+        });
+
+        // Log detailed error info
+        if (response.data && typeof response.data === "object") {
+          console.error("Backend error details:", JSON.stringify(response.data, null, 2));
+        }
+
+        return response;
+      },
     }),
 
     // Update coupon
     updateCoupon: builder.mutation<Coupon, { id: string; payload: FormData }>({
       query: ({ id, payload }) => ({
-        url: `api/superadmin/orders/coupons/${id}`,
+        url: `api/superadmin/orders/coupons/update/${id}/`,
         method: "PATCH",
         body: payload,
       }),
@@ -181,9 +203,23 @@ export const couponsApi = createApi({
     // Delete coupon
     deleteCoupon: builder.mutation<void, string>({
       query: (id) => ({
-        url: `api/superadmin/orders/coupons/${id}`,
+        url: `api/superadmin/orders/coupons/delete/${id}/`,
         method: "DELETE",
+        responseHandler: async (response) => await response.text(),
       }),
+      transformResponse: () => undefined,
+      transformErrorResponse: (response) => {
+        console.error("Coupons API: Delete coupon error response", {
+          status: response.status,
+          data: response.data,
+        });
+
+        if (response.data && typeof response.data === "object") {
+          console.error("Backend error details:", JSON.stringify(response.data, null, 2));
+        }
+
+        return response;
+      },
     }),
 
     // Toggle coupon public/private status

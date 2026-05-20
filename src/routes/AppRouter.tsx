@@ -15,6 +15,7 @@
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/common/Layout";
 import { CouponsPage } from "@/features/coupons/components/CouponsPage";
+import { NotificationsPage } from "@/features/notifications";
 import { APP_ROUTES } from "@/lib/constants";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -32,6 +33,7 @@ export function AppRouter() {
           <Route path={APP_ROUTES.HOME} element={<DashboardPage />} />
           <Route path={APP_ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={APP_ROUTES.COUPONS} element={<CouponsPage />} />
+          <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
         </Route>
       </Route>
 

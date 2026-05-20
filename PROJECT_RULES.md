@@ -38,6 +38,11 @@
 - **Tailwind CSS classes only.** Do not write inline `style={{}}` props or random hex
   colors. Use Tailwind utility classes. For custom values, extend the theme.
 - **No CSS-in-JS.** Avoid styled-components or emotion.
+- **Consistent spacing across all pages.** The `Layout` component provides standard padding:
+  - Main content area: `px-2 py-4`
+  - Do NOT add extra padding/margin to page containers that would conflict with Layout's spacing.
+  - All new pages and features must follow this standard spacing pattern.
+  - Only add internal padding/gaps to section containers or specific UI elements, not to the root page wrapper.
 
 ## ⚛️ Components
 

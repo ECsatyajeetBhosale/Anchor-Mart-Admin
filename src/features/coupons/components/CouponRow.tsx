@@ -3,6 +3,7 @@
  * Compact table row for a single coupon
  */
 
+import { cn } from "@/lib/utils";
 import type { Coupon } from "../types/coupon";
 import {
   enrichCoupon,
@@ -26,7 +27,12 @@ export function CouponRow({ coupon, onEdit, onDelete, onView }: CouponRowProps) 
   const enriched = enrichCoupon(coupon);
 
   return (
-    <tr className="border-b border-border hover:bg-muted/50 transition-colors text-xs">
+    <tr
+      className={cn(
+        "border-b border-border text-xs transition-colors hover:bg-muted/50",
+        coupon.is_deleted && "border-red-200 bg-red-50/45 hover:bg-red-50/70",
+      )}
+    >
       {/* Code - Truncated with max width */}
       <td className="px-3 py-2 font-medium text-foreground">
         <CouponRowActions.CodeCell coupon={coupon} />

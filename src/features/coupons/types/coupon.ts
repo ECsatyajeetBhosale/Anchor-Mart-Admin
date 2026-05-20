@@ -3,8 +3,8 @@
  * Defines all TypeScript interfaces for coupon management
  */
 
-export type DiscountType = "percentage" | "flat";
-export type CouponStatus = "active" | "expired" | "upcoming";
+export type DiscountType = "percentage" | "fixed" | "flat";
+export type CouponStatus = "active" | "deactivated";
 export type SortField = "discount_value" | "times_used" | "valid_to" | "created_at";
 export type SortOrder = "asc" | "desc";
 
@@ -21,9 +21,11 @@ export interface Coupon {
   max_discount_amount: string;
   valid_from: string; // ISO 8601 datetime
   valid_to: string; // ISO 8601 datetime
+  is_active: boolean; // Coupon active/inactive status from backend
   usage_limit: number | null;
   times_used: number;
   is_public: boolean;
+  is_deleted?: boolean;
 }
 
 /**
@@ -107,6 +109,7 @@ export interface CreateCouponPayload {
   valid_to: string;
   usage_limit: number | null;
   is_public: boolean;
+  is_active: boolean;
   image?: File;
 }
 

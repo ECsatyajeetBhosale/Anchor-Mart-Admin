@@ -8,11 +8,10 @@
  *   - If logged out → shows a Login link
  */
 
+import { BellIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { logout, useAuth } from "@/features/auth";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAuth } from "@/features/auth";
 import { APP_ROUTES } from "@/lib/constants";
 import { APP_TEXT } from "@/lib/messages";
 
@@ -21,15 +20,11 @@ type HeaderProps = {
 };
 
 export function Header({ leftSlot }: HeaderProps) {
-  const { isLoggedIn, user } = useAuth();
-  const dispatch = useAppDispatch();
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear auth state from Redux (and localStorage)
-    dispatch(logout());
-    // Redirect to login page
-    navigate(APP_ROUTES.LOGIN);
+  const handleNotificationClick = () => {
+    navigate(APP_ROUTES.NOTIFICATIONS);
   };
 
   return (
@@ -50,15 +45,14 @@ export function Header({ leftSlot }: HeaderProps) {
         {/* Right side — auth actions */}
         <nav className="flex shrink-0 items-center gap-4">
           {isLoggedIn ? (
-            <>
-              <span className="text-sm text-gray-600">
-                {APP_TEXT.AUTH.HELLO},{" "}
-                <strong>{user?.name ?? APP_TEXT.AUTH.ACCOUNT_FALLBACK}</strong>
-              </span>
-              <Button variant="secondary" onClick={handleLogout}>
-                {APP_TEXT.AUTH.LOGOUT}
-              </Button>
-            </>
+            <button
+              type="button"
+              onClick={handleNotificationClick}
+              className="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+              aria-label="Notifications"
+            >
+              <BellIcon className="size-5" />
+            </button>
           ) : (
             <Link
               to={APP_ROUTES.LOGIN}

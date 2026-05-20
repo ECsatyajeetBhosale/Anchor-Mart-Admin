@@ -6,40 +6,31 @@
 import type { Coupon, CouponStatus, CouponWithStatus } from "../types/coupon";
 
 /**
- * Determine coupon status based on dates
+ * Determine coupon status based on is_active flag
  */
 export function getCouponStatus(coupon: Coupon): CouponStatus {
-  const now = new Date();
-  const validFrom = new Date(coupon.valid_from);
-  const validTo = new Date(coupon.valid_to);
-
-  if (now < validFrom) return "upcoming";
-  if (now > validTo) return "expired";
-  return "active";
+  return coupon.is_active ? "active" : "deactivated";
 }
 
 /**
  * Check if coupon is expired
  */
 export function isExpired(coupon: Coupon): boolean {
-  return new Date() > new Date(coupon.valid_to);
+  return !coupon.is_active && new Date() > new Date(coupon.valid_to);
 }
 
 /**
  * Check if coupon is active
  */
 export function isActive(coupon: Coupon): boolean {
-  const now = new Date();
-  const validFrom = new Date(coupon.valid_from);
-  const validTo = new Date(coupon.valid_to);
-  return now >= validFrom && now <= validTo;
+  return coupon.is_active;
 }
 
 /**
  * Check if coupon is upcoming
  */
 export function isUpcoming(coupon: Coupon): boolean {
-  return new Date() < new Date(coupon.valid_from);
+  return !coupon.is_active && new Date() < new Date(coupon.valid_from);
 }
 
 /**
@@ -123,10 +114,8 @@ export function getStatusColor(status: CouponStatus): string {
   switch (status) {
     case "active":
       return "bg-green-600";
-    case "expired":
+    case "deactivated":
       return "bg-red-600";
-    case "upcoming":
-      return "bg-amber-600";
     default:
       return "bg-gray-600";
   }
@@ -139,10 +128,8 @@ export function getStatusIcon(status: CouponStatus): string {
   switch (status) {
     case "active":
       return "🟢";
-    case "expired":
+    case "deactivated":
       return "🔴";
-    case "upcoming":
-      return "🟡";
     default:
       return "⚪";
   }
@@ -151,7 +138,7 @@ export function getStatusIcon(status: CouponStatus): string {
 /**
  * Get discount type color
  */
-export function getDiscountTypeColor(type: "percentage" | "flat"): string {
+export function getDiscountTypeColor(type: "percentage" | "fixed" | "flat"): string {
   return type === "percentage" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800";
 }
 
@@ -257,7 +244,7 @@ export function filterCouponsByStatus(coupons: Coupon[], status: "all" | CouponS
  */
 export function filterCouponsByType(
   coupons: Coupon[],
-  type: "all" | "percentage" | "flat",
+  type: "all" | "percentage" | "fixed" | "flat",
 ): Coupon[] {
   if (type === "all") return coupons;
 

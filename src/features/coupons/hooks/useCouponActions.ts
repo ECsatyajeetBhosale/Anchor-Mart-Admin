@@ -26,6 +26,62 @@ interface UseCouponActionsReturn {
 }
 
 /**
+ * Extract error message from RTK Query error response
+ */
+function extractErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  // Handle RTK Query FetchBaseQueryError
+  if (typeof err === "object" && err !== null) {
+    const error = err as Record<string, unknown>;
+
+    // Check for API error response with detail message
+    if (error.data && typeof error.data === "object") {
+      const data = error.data as Record<string, unknown>;
+      if (data.detail && typeof data.detail === "string") {
+        return data.detail;
+      }
+      if (data.message && typeof data.message === "string") {
+        return data.message;
+      }
+      if (data.error && typeof data.error === "string") {
+        return data.error;
+      }
+    }
+
+    // Check for HTTP status
+    if (error.status && typeof error.status === "number") {
+      const status = error.status as number;
+      const statusMessages: Record<number, string> = {
+        400: "Invalid request. Please check the data and try again.",
+        401: "Unauthorized. Please log in again.",
+        403: "You don't have permission to perform this action.",
+        404: "Coupon not found.",
+        500: "Server error. Please try again later.",
+        503: "Service unavailable. Please try again later.",
+      };
+      return statusMessages[status] || `Error (${status}): Failed to complete the request.`;
+    }
+
+    if (error.originalStatus && typeof error.originalStatus === "number") {
+      if (error.originalStatus >= 500) {
+        return "Server error. Please try again later.";
+      }
+
+      return `Error (${error.originalStatus}): Failed to complete the request.`;
+    }
+
+    if (error.status === "PARSING_ERROR") {
+      return "Server returned an invalid error response. Please try again later.";
+    }
+  }
+
+  return "An unexpected error occurred. Please try again.";
+}
+
+/**
  * Hook for coupon CRUD actions using RTK Query mutations
  */
 export function useCouponActions(): UseCouponActionsReturn {
@@ -52,9 +108,10 @@ export function useCouponActions(): UseCouponActionsReturn {
         setError(null);
         await deleteCouponMutation(id).unwrap();
       } catch (err) {
+        const errorMessage = extractErrorMessage(err);
         setIsError(true);
-        setError(err instanceof Error ? err.message : "Failed to delete coupon");
-        throw err;
+        setError(errorMessage);
+        throw new Error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -71,9 +128,10 @@ export function useCouponActions(): UseCouponActionsReturn {
         const result = await toggleCouponPublicMutation({ id, isPublic }).unwrap();
         return result;
       } catch (err) {
+        const errorMessage = extractErrorMessage(err);
         setIsError(true);
-        setError(err instanceof Error ? err.message : "Failed to toggle coupon");
-        throw err;
+        setError(errorMessage);
+        throw new Error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -90,9 +148,10 @@ export function useCouponActions(): UseCouponActionsReturn {
         const result = await duplicateCouponMutation(id).unwrap();
         return result;
       } catch (err) {
+        const errorMessage = extractErrorMessage(err);
         setIsError(true);
-        setError(err instanceof Error ? err.message : "Failed to duplicate coupon");
-        throw err;
+        setError(errorMessage);
+        throw new Error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -109,9 +168,10 @@ export function useCouponActions(): UseCouponActionsReturn {
         const result = await createCouponMutation(payload).unwrap();
         return result;
       } catch (err) {
+        const errorMessage = extractErrorMessage(err);
         setIsError(true);
-        setError(err instanceof Error ? err.message : "Failed to create coupon");
-        throw err;
+        setError(errorMessage);
+        throw new Error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -128,9 +188,10 @@ export function useCouponActions(): UseCouponActionsReturn {
         const result = await updateCouponMutation({ id, payload }).unwrap();
         return result;
       } catch (err) {
+        const errorMessage = extractErrorMessage(err);
         setIsError(true);
-        setError(err instanceof Error ? err.message : "Failed to update coupon");
-        throw err;
+        setError(errorMessage);
+        throw new Error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -175,6 +236,7 @@ export function useCopyToClipboard() {
  */
 export function useConfirmation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [confirmData, setConfirmData] = useState<{
     title: string;
     description: string;
@@ -203,25 +265,39 @@ export function useConfirmation() {
 
   const closeConfirmation = useCallback(() => {
     setIsOpen(false);
+    setIsConfirming(false);
     setConfirmData(null);
   }, []);
 
   const handleConfirm = useCallback(async () => {
-    if (confirmData?.onConfirm) {
-      await confirmData.onConfirm();
+    if (!confirmData?.onConfirm || isConfirming) {
+      return;
     }
-    closeConfirmation();
-  }, [confirmData, closeConfirmation]);
+
+    try {
+      setIsConfirming(true);
+      await confirmData.onConfirm();
+      closeConfirmation();
+    } catch (err) {
+      console.error("Confirmation action failed:", err);
+      setIsConfirming(false);
+    }
+  }, [confirmData, closeConfirmation, isConfirming]);
 
   const handleCancel = useCallback(() => {
+    if (isConfirming) {
+      return;
+    }
+
     if (confirmData?.onCancel) {
       confirmData.onCancel();
     }
     closeConfirmation();
-  }, [confirmData, closeConfirmation]);
+  }, [confirmData, closeConfirmation, isConfirming]);
 
   return {
     isOpen,
+    isConfirming,
     confirmData,
     openConfirmation,
     closeConfirmation,

@@ -173,3 +173,19 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+/*
+ * ─── Utility classes ────────────────────────────────────────────────────────
+ * Custom utility classes for specific use cases.
+ */
+@layer utilities {
+  /* Hide scrollbar while maintaining scrollability */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}

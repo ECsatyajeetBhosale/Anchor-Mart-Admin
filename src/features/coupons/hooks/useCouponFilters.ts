@@ -99,14 +99,13 @@ export function useFilterOptions() {
   const statusOptions = [
     { value: "all", label: "All Status" },
     { value: "active", label: "Active" },
-    { value: "expired", label: "Expired" },
-    { value: "upcoming", label: "Upcoming" },
+    { value: "deactivated", label: "Deactivated" },
   ];
 
   const typeOptions = [
     { value: "all", label: "All Types" },
     { value: "percentage", label: "Percentage" },
-    { value: "flat", label: "Flat Amount" },
+    { value: "fixed", label: "Fixed Amount" },
   ];
 
   const visibilityOptions = [

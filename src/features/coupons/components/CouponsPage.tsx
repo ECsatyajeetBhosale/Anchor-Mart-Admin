@@ -3,7 +3,10 @@
  * Main page for coupon management with responsive, compact layout
  */
 
+import { AlertTriangle } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { useConfirmation, useCouponActions } from "../hooks/useCouponActions";
 import { useCouponFilters } from "../hooks/useCouponFilters";
 import { useCoupons, usePagination } from "../hooks/useCoupons";
@@ -12,14 +15,16 @@ import { CouponsFilters } from "./CouponsFilters";
 import { CouponsHeader } from "./CouponsHeader";
 import { CouponsPagination } from "./CouponsPagination";
 import { CouponsTable } from "./CouponsTable";
+import { CreateCouponModal } from "./CreateCouponModal";
 import { EmptyState } from "./EmptyState";
 
 export function CouponsPage() {
-  const [_selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-  const [_modalMode, setModalMode] = useState<"view" | "edit" | "create">("view");
-  const [_isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Hooks
+  const { showToast } = useToast();
   const {
     filters,
     updateSearch,
@@ -42,6 +47,7 @@ export function CouponsPage() {
   const { deleteAction } = useCouponActions();
   const {
     isOpen: isConfirmOpen,
+    isConfirming,
     confirmData,
     openConfirmation,
     handleConfirm,
@@ -51,33 +57,34 @@ export function CouponsPage() {
   // Handlers
   const handleCreateClick = useCallback(() => {
     setSelectedCoupon(null);
-    setModalMode("create");
-    setIsModalOpen(true);
+    setIsCreateModalOpen(true);
   }, []);
 
   const handleViewClick = useCallback((coupon: Coupon) => {
     setSelectedCoupon(coupon);
-    setModalMode("view");
-    setIsModalOpen(true);
   }, []);
 
   const handleEditClick = useCallback((coupon: Coupon) => {
     setSelectedCoupon(coupon);
-    setModalMode("edit");
-    setIsModalOpen(true);
+    setIsEditModalOpen(true);
   }, []);
 
   const handleDeleteClick = useCallback(
     (coupon: Coupon) => {
       openConfirmation({
         title: "Delete Coupon",
-        description: `Are you sure you want to delete "${coupon.code}"? This cannot be undone.`,
+        description: `Are you sure you want to delete "${coupon.code}"? This action cannot be undone.`,
         onConfirm: async () => {
           try {
             await deleteAction(coupon.id);
+
+            showToast(`Coupon "${coupon.code}" deleted successfully`, "success", 3000);
             await refetch();
           } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Failed to delete coupon";
+            showToast(errorMessage, "error", 4000);
             console.error("Failed to delete coupon:", err);
+            throw err;
           }
         },
         confirmText: "Delete",
@@ -85,7 +92,7 @@ export function CouponsPage() {
         isDangerous: true,
       });
     },
-    [deleteAction, refetch, openConfirmation],
+    [deleteAction, refetch, openConfirmation, showToast],
   );
 
   const handleExportClick = useCallback(() => {
@@ -112,7 +119,7 @@ export function CouponsPage() {
       />
 
       {/* Content */}
-      <div className="flex-1 overflow-auto w-full">
+      <div className="flex-1 overflow-auto w-full scrollbar-hide">
         {isError && (
           <div className="m-4 p-3 bg-destructive/10 border border-destructive/30 rounded-md">
             <p className="text-xs text-destructive">
@@ -148,31 +155,52 @@ export function CouponsPage() {
 
       {/* Confirmation Dialog */}
       {isConfirmOpen && confirmData && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-lg shadow-lg max-w-sm w-full border border-border">
-            <div className="p-4">
-              <h2 className="text-sm font-semibold text-foreground mb-1">{confirmData.title}</h2>
-              <p className="text-xs text-muted-foreground mb-4">{confirmData.description}</p>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          aria-modal="true"
+          role="dialog"
+          aria-labelledby="delete-coupon-title"
+          aria-describedby="delete-coupon-description"
+        >
+          <div className="w-full max-w-sm rounded-lg border border-border bg-card shadow-xl">
+            <div className="p-5">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <AlertTriangle className="size-4" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 id="delete-coupon-title" className="text-sm font-semibold text-foreground">
+                    {confirmData.title}
+                  </h2>
+                  <p
+                    id="delete-coupon-description"
+                    className="mt-1 text-xs leading-5 text-muted-foreground"
+                  >
+                    {confirmData.description}
+                  </p>
+                </div>
+              </div>
 
               <div className="flex gap-2 justify-end">
-                <button
+                <Button
                   type="button"
                   onClick={handleCancel}
-                  className="px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 text-foreground rounded-md transition-colors"
+                  variant="outline"
+                  size="sm"
+                  disabled={isConfirming}
                 >
                   {confirmData.cancelText || "Cancel"}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={handleConfirm}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                    confirmData.isDangerous
-                      ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                      : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                  }`}
+                  variant={confirmData.isDangerous ? "destructive" : "default"}
+                  size="sm"
+                  isLoading={isConfirming}
+                  disabled={isConfirming}
                 >
-                  {confirmData.confirmText || "Confirm"}
-                </button>
+                  {isConfirming ? "Deleting..." : confirmData.confirmText || "Confirm"}
+                </Button>
               </div>
             </div>
           </div>
@@ -180,6 +208,25 @@ export function CouponsPage() {
       )}
 
       {/* TODO: Add Modal for Create/Edit/View */}
+      <CreateCouponModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          refetch();
+        }}
+      />
+      <CreateCouponModal
+        isOpen={isEditModalOpen}
+        mode="edit"
+        coupon={selectedCoupon}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedCoupon(null);
+        }}
+        onSuccess={() => {
+          refetch();
+        }}
+      />
     </div>
   );
 }
