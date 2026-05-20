@@ -258,6 +258,146 @@ GET /api/superadmin/orders/coupons
 - `isPast()` - Check if date is past
 - And 15+ more...
 
+## Creating and Managing Coupons
+
+### Creating a New Coupon
+
+#### Required Fields
+| Field | Type | Example | Notes |
+|-------|------|---------|-------|
+| **Code** | Text | `SUMMER2026` | Unique coupon code (alphanumeric) |
+| **Discount Type** | Select | `Percentage (%)` or `Flat ($)` | Choose type from dropdown |
+| **Discount Value** | Number | `20` | Must be positive number |
+| **Valid From** | DateTime | `2026-05-20 10:00` | When coupon becomes active |
+| **Valid To** | DateTime | `2026-06-20 10:00` | When coupon expires (must be after Valid From) |
+
+#### Optional Fields
+| Field | Type | Example | Notes |
+|-------|------|---------|-------|
+| **Min Purchase Amount** | Number | `100` | Minimum cart value required (leave empty for none) |
+| **Max Discount Amount** | Number | `50` | Cap on discount value (leave empty if not needed) |
+| **Usage Limit** | Number | `100` | Total uses allowed (leave empty for unlimited) |
+| **Image** | File | Select file | Optional coupon image (PNG, JPG, GIF, max 5MB) |
+| **Public** | Toggle | Checked/Unchecked | Make visible to all customers |
+
+#### Form Validation Rules
+
+**Code**
+- ✅ Required, must not be empty
+- ✅ Any alphanumeric characters allowed
+- ✅ Must be unique in the system
+
+**Discount Value**
+- ✅ Required, must be positive number
+- ✅ Can be decimal (e.g., 20.50)
+
+**Minimum Purchase Amount**
+- ⭕ Optional
+- ✅ Must be valid number if provided
+- ✅ Default is 0
+
+**Valid From & Valid To**
+- ✅ Both required
+- ✅ Valid To must be AFTER Valid From
+- ✅ Format: YYYY-MM-DDTHH:MM
+
+**Usage Limit**
+- ⭕ Optional
+- ✅ Must be positive integer if provided
+- ✅ Leave empty for unlimited uses
+
+**Image**
+- ⭕ Optional
+- ✅ Must be image file (PNG, JPG, GIF)
+- ✅ Max file size: 5MB
+
+#### Common Issues & Solutions
+
+**Button Disabled After Image Upload?**
+- Reason: Image error state not cleared when removing images
+- Fix: The form now properly clears error state when removing images
+- Solution: Remove the image and re-upload, or proceed without image
+
+**500 Error on Submit?**
+- Reason: Unnecessary fields or invalid data being sent
+- Fix: Form now only sends fields with values
+- Solution: 
+  1. Check browser console (F12) for exact error
+  2. Verify all required fields are filled
+  3. Ensure dates are in correct format
+
+**Form Won't Submit?**
+- Check validation: All required fields must have values
+- Date validation: Valid To must be after Valid From
+- Code validation: Code must not be empty
+- Check browser console for specific errors
+
+#### Form Submission Details
+
+The form uses FormData to send:
+- Code, discount type, discount value (always sent)
+- Valid from and valid to dates (always sent)
+- Optional fields (only sent if filled):
+  - `max_discount_amount` - Only sent if filled
+  - `usage_limit` - Only sent if filled
+  - `image` - Only sent if selected
+  - `min_purchase_amount` - Only sent if filled
+  - `is_public` - Sent as boolean
+
+#### Validation Status Panel
+
+During development, a validation status panel shows real-time information:
+```
+✓ Code: ✅ Valid - "SUMMER2026"
+✓ Discount Value: ✅ Valid - "20"
+✓ Valid From: ✅ Set - "2026-05-20T10:00"
+✓ Valid To: ✅ Set - "2026-06-20T10:00"
+✓ Dates Valid: ✅ Valid
+✓ Image: ⭕ Not required
+✓ Errors Object: {}
+✓ No Errors: ✅ True
+Button Enabled: ✅ YES
+```
+
+### Editing an Existing Coupon
+
+1. Click the **Edit** button (pencil icon) on any coupon row
+2. Modal opens with current coupon data
+3. Modify any fields (same validation as creation)
+4. Click **Save Changes**
+5. Form submits and updates the coupon
+
+### Deleting a Coupon
+
+1. Click the **Delete** button (trash icon) on any coupon row
+2. Confirmation modal appears
+3. Click **Confirm** to delete
+4. Coupon is removed from the system
+
+### Duplicating a Coupon
+
+1. Click the **Duplicate** button on any coupon row
+2. Creates a copy with a new unique code
+3. New coupon appears in the table
+4. You can then edit it to change details
+
+### Toggling Visibility
+
+1. Click the **Public/Private** toggle on any coupon row
+2. Instantly updates coupon visibility
+3. No confirmation required
+4. Changes visible immediately in the table
+
+### Copying Coupon Code
+
+1. Hover over the coupon code in the table
+2. Click the **copy icon** (📋) that appears
+3. Icon smoothly animates to green checkmark (✓)
+4. Tooltip shows "Copied!"
+5. Code is copied to clipboard
+6. After 1.5 seconds, icon reverts to copy icon
+7. Each row tracks its own copy state independently
+
 ## Customization
 
 ### Add a New Metric
@@ -564,4 +704,4 @@ function MyCopyButton({ text, itemId }) {
 ---
 
 **Last Updated:** May 20, 2026
-**Version:** 1.1.0 (Added Copy Feedback Feature)
+**Version:** 1.2.0 (Complete Consolidated Reference - Copy Feedback + Creation Form + Management Guide)
