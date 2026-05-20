@@ -38,7 +38,11 @@ npm run dev
 - Real-time search by coupon code (debounced 300ms)
 - 4 advanced filters (status, type, visibility, usage)
 - Server-side pagination (10, 20, 50, 100 per page)
-- Copy coupon code to clipboard
+- **Copy coupon code to clipboard with ChatGPT-style feedback**
+  - Smooth icon animation (Copy → Green Checkmark)
+  - Per-row state isolation
+  - Auto-revert after 1.5 seconds
+  - Full accessibility support
 - View/Edit/Delete actions
 - Toggle public/private visibility
 - Duplicate coupon
@@ -420,6 +424,106 @@ getRelativeTime(coupon.valid_to); // "in 2 days"
 getDaysUntil(coupon.valid_to); // 2
 ```
 
+## Copy-to-Clipboard Feedback Feature
+
+### Overview
+The coupons table includes a professional, ChatGPT-style copy-to-clipboard feedback mechanism. When users click the copy icon:
+
+1. Code is copied to clipboard instantly
+2. Copy icon smoothly transitions to a green checkmark (200ms animation)
+3. Tooltip updates: "Copy code" → "Copied!"
+4. Button is disabled to prevent multiple clicks
+5. After 1.5 seconds, icon automatically reverts with smooth animation
+6. Each row shows its own independent feedback state
+
+### Implementation Details
+
+#### Enhanced Hook: `useCopyToClipboard`
+```typescript
+import { useCopyToClipboard } from "@/features/coupons/hooks/useCouponActions";
+
+// Usage with per-item state tracking
+const { isCopied, copyToClipboard } = useCopyToClipboard(coupon.id, 1500);
+
+// Parameters:
+// - coupon.id: Unique identifier for per-row isolation
+// - 1500: Reset delay in milliseconds (1.5 seconds)
+```
+
+#### Component Implementation
+**File:** `src/features/coupons/components/CouponRowActions.tsx`
+
+Key features:
+- Dual-icon setup (Copy + Check icons overlay)
+- Smooth CSS transitions (200ms fade + scale)
+- Per-row state isolation (no cross-row interference)
+- Green checkmark color: `text-green-600` (light), `text-green-500` (dark)
+- Button disabled during feedback state
+- Dynamic aria-label and tooltip text
+
+#### Animation Details
+```css
+/* Copy Icon Animation */
+opacity: 100 → 0 (fade out)
+scale: 100 → 0 (shrink)
+duration: 200ms
+
+/* Check Icon Animation */
+opacity: 0 → 100 (fade in)
+scale: 0 → 100 (grow)
+duration: 200ms
+color: text-green-600 (light mode) / text-green-500 (dark mode)
+
+/* Feedback Display Duration */
+1500ms (1.5 seconds) - industry standard
+```
+
+#### Usage Example
+```typescript
+// In any component that needs copy feedback
+function MyCopyButton({ text, itemId }) {
+  const { isCopied, copyToClipboard } = useCopyToClipboard(itemId, 1500);
+
+  return (
+    <button
+      onClick={() => copyToClipboard(text)}
+      disabled={isCopied}
+      aria-label={isCopied ? "Copied" : "Copy"}
+    >
+      {isCopied ? "✓" : "📋"}
+    </button>
+  );
+}
+```
+
+### Key Characteristics
+
+✅ **Per-Row State Isolation**
+- Each coupon tracks its own copy state independently
+- Multiple rows can be copied simultaneously
+- No cross-row state pollution
+
+✅ **Smooth Animations**
+- GPU-accelerated (transform + opacity)
+- 200ms icon transitions
+- Smooth 1.5s feedback display
+
+✅ **Full Accessibility**
+- Keyboard navigation (Tab, Enter)
+- ARIA labels (dynamic)
+- Screen reader compatible
+- WCAG 2.1 AA compliant
+
+✅ **Responsive Design**
+- Works on desktop, tablet, mobile
+- Touch events fully supported
+- Dark mode with proper contrast
+
+### Files Modified
+1. `src/features/coupons/hooks/useCouponActions.ts` - Enhanced hook
+2. `src/features/coupons/components/CouponRowActions.tsx` - Icon animation
+3. `src/features/coupons/components/CouponActions.tsx` - Consistency update
+
 ## Troubleshooting
 
 ### Coupons not loading?
@@ -459,5 +563,5 @@ getDaysUntil(coupon.valid_to); // 2
 
 ---
 
-**Last Updated:** May 18, 2026
-**Version:** 1.0.0
+**Last Updated:** May 20, 2026
+**Version:** 1.1.0 (Added Copy Feedback Feature)
