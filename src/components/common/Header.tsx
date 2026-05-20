@@ -1,13 +1,3 @@
-/**
- * components/common/Header.tsx
- *
- * Top navigation bar — shown on every page via the Layout component.
- *
- * Behaviour:
- *   - If logged in  → shows the user's name + a Logout button
- *   - If logged out → shows a Login link
- */
-
 import { BellIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";

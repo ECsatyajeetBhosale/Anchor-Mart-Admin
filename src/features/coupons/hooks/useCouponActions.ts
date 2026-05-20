@@ -215,20 +215,37 @@ export function useCouponActions(): UseCouponActionsReturn {
 /**
  * Hook for copy to clipboard
  */
-export function useCopyToClipboard() {
-  const [isCopied, setIsCopied] = useState(false);
+/**
+ * Hook for copy-to-clipboard with per-item state tracking
+ * Allows tracking copied state for multiple items independently
+ * @param itemId - Optional unique identifier for the item being copied (e.g., coupon ID)
+ * @param resetDelay - Time in ms before reverting to copy icon (default: 1500ms for ChatGPT-like UX)
+ */
+export function useCopyToClipboard(itemId?: string, resetDelay: number = 1500) {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const copyToClipboard = useCallback(async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  }, []);
+  const copyToClipboard = useCallback(
+    async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        // Track the specific item that was copied
+        const idToCopy = itemId || "default";
+        setCopiedId(idToCopy);
+        const timer = setTimeout(() => {
+          setCopiedId(null);
+        }, resetDelay);
+        return () => clearTimeout(timer);
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    },
+    [itemId, resetDelay],
+  );
 
-  return { isCopied, copyToClipboard };
+  // For backward compatibility, also expose a simple isCopied state
+  const isCopied = itemId ? copiedId === itemId : copiedId !== null;
+
+  return { isCopied, copiedId, copyToClipboard };
 }
 
 /**

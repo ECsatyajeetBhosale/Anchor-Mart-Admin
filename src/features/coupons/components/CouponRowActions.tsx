@@ -4,7 +4,7 @@
  * Follows industry standards: minimal clicks, high visibility actions
  */
 
-import { Copy, Edit, Eye, Trash2 } from "lucide-react";
+import { Check, Copy, Edit, Eye, Trash2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCopyToClipboard } from "../hooks/useCouponActions";
 import type { Coupon } from "../types/coupon";
@@ -18,11 +18,15 @@ interface CouponRowActionsProps {
 
 /**
  * Code Cell with Copy Icon
- * Displays coupon code with a subtle copy icon that appears on hover
- * Follows modern UX: icon visible on hover, tooltip on interaction
+ * Displays coupon code with a copy icon that:
+ * - Shows on hover for better UX
+ * - Changes to checkmark icon on successful copy (ChatGPT-style)
+ * - Smooth fade transition between icons
+ * - Per-row state: only the clicked row shows success state
+ * - Auto-reverts after 1.5 seconds
  */
 function CodeCell({ coupon }: { coupon: Coupon }) {
-  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const { isCopied, copyToClipboard } = useCopyToClipboard(coupon.id, 1500);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -39,13 +43,28 @@ function CodeCell({ coupon }: { coupon: Coupon }) {
               type="button"
               onClick={handleCopy}
               className="p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 shrink-0 hover:bg-muted rounded-md hover:scale-110"
-              aria-label="Copy coupon code"
+              aria-label={isCopied ? "Copied" : "Copy coupon code"}
+              disabled={isCopied}
             >
-              <Copy className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground transition-colors" />
+              {/* Icon container with smooth fade transition */}
+              <div className="relative w-3.5 h-3.5">
+                {/* Copy icon */}
+                <Copy
+                  className={`absolute inset-0 w-3.5 h-3.5 text-muted-foreground hover:text-foreground transition-all duration-200 ${
+                    isCopied ? "opacity-0 scale-0" : "opacity-100 scale-100"
+                  }`}
+                />
+                {/* Check icon - appears when copied */}
+                <Check
+                  className={`absolute inset-0 w-3.5 h-3.5 text-green-600 dark:text-green-500 transition-all duration-200 ${
+                    isCopied ? "opacity-100 scale-100" : "opacity-0 scale-0"
+                  }`}
+                />
+              </div>
             </button>
           </TooltipTrigger>
           <TooltipContent side="top" className="text-xs bg-slate-900 text-white">
-            {isCopied ? "✓ Copied!" : "Copy code"}
+            {isCopied ? "Copied!" : "Copy code"}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

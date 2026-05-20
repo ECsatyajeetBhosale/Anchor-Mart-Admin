@@ -26,7 +26,7 @@ export function CouponActions({
   onView,
 }: CouponActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const { isCopied, copyToClipboard } = useCopyToClipboard(coupon.id, 1500);
 
   const handleCopyCode = async () => {
     await copyToClipboard(coupon.code);
