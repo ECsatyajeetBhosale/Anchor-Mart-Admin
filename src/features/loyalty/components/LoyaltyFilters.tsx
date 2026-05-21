@@ -80,7 +80,7 @@ export function LoyaltyFilters({
               className="px-2 py-1.5 border border-input rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-ring focus:border-transparent bg-background text-foreground cursor-pointer"
             >
               <option value={10}>10 / page</option>
-              <option value={25}>25 / page</option>
+              <option value={20}>20 / page</option>
               <option value={50}>50 / page</option>
               <option value={100}>100 / page</option>
             </select>
