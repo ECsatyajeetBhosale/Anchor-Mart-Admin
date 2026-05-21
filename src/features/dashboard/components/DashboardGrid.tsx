@@ -1,15 +1,3 @@
-/**
- * features/dashboard/components/DashboardGrid.tsx
- *
- * Main dashboard grid component that displays all metrics.
- *
- * Layout:
- *   - Desktop: 2x2 grid
- *   - Mobile: Stacked (1 column)
- *
- * Handles loading and error states.
- */
-
 import { APP_TEXT } from "@/lib/messages";
 import { useGetDashboardHeaderQuery } from "../api/dashboardApi";
 import { DashboardCard } from "./DashboardCard";

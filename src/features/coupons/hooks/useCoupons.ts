@@ -35,7 +35,7 @@ interface UseCouponsReturn {
 export function useCoupons(options: UseCouponsOptions = {}): UseCouponsReturn {
   const params: CouponQueryParams = {
     page: options.page ?? 1,
-    limit: options.limit ?? 20,
+    limit: options.limit ?? 10,
     search: options.search,
     status: options.status,
     type: options.type as CouponQueryParams["type"],
@@ -64,7 +64,7 @@ export function useCoupons(options: UseCouponsOptions = {}): UseCouponsReturn {
       coupons: couponsData,
       total,
       page: options.page ?? 1,
-      limit: options.limit ?? 20,
+      limit: options.limit ?? 10,
       pages,
       isLoading,
       isError: !!error,
@@ -77,7 +77,7 @@ export function useCoupons(options: UseCouponsOptions = {}): UseCouponsReturn {
 /**
  * Hook to manage pagination
  */
-export function usePagination(initialPage = 1, initialLimit = 20) {
+export function usePagination(initialPage = 1, initialLimit = 10) {
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
 

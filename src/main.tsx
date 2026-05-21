@@ -17,8 +17,14 @@ import { store } from "@/store";
 import App from "./App";
 import "./index.css";
 
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Root element #root was not found.");
+}
+
 // Mount the app into the <div id="root"> in index.html
-createRoot(document.getElementById("root")!).render(
+createRoot(rootElement).render(
   <StrictMode>
     {/* Redux store — all components can access state via useAppSelector */}
     <Provider store={store}>

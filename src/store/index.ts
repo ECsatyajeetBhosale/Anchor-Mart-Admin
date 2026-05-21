@@ -14,6 +14,7 @@ import { authApi } from "@/features/auth/api/authApi";
 import authReducer from "@/features/auth/slice/authSlice";
 import { couponsApi } from "@/features/coupons/api/couponsApi";
 import { dashboardApi } from "@/features/dashboard/api/dashboardApi";
+import { loyaltyApi } from "@/features/loyalty/api/loyaltyApi";
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [couponsApi.reducerPath]: couponsApi.reducer,
+    [loyaltyApi.reducerPath]: loyaltyApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -33,6 +35,7 @@ export const store = configureStore({
       authApi.middleware,
       dashboardApi.middleware,
       couponsApi.middleware,
+      loyaltyApi.middleware,
     ),
 });
 
