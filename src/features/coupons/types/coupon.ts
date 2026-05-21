@@ -1,50 +1,45 @@
-/**
- * Coupon Types
- * Defines all TypeScript interfaces for coupon management
- */
-
-export type DiscountType = "percentage" | "fixed" | "flat";
-export type CouponStatus = "active" | "deactivated";
-export type SortField = "discount_value" | "times_used" | "valid_to" | "created_at";
-export type SortOrder = "asc" | "desc";
-
-/**
- * Core Coupon Data Structure
- */
 export interface Coupon {
   id: string;
   code: string;
-  image: string;
-  discount_type: DiscountType;
-  discount_value: string; // Decimal as string from API
+  discount_type: "percentage" | "fixed";
+  discount_value: string;
   min_purchase_amount: string;
   max_discount_amount: string;
-  valid_from: string; // ISO 8601 datetime
-  valid_to: string; // ISO 8601 datetime
-  is_active: boolean; // Coupon active/inactive status from backend
+  valid_from: string;
+  valid_to: string;
+  is_active: boolean;
+  is_public: boolean;
   usage_limit: number | null;
   times_used: number;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CouponQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  type?: string;
+  sort?: string;
+  order?: string;
+}
+
+export interface CouponPayload {
+  code: string;
+  image: string;
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  min_purchase_amount: number;
+  max_discount_amount?: number | null;
+  valid_from: string;
+  valid_to: string;
+  usage_limit: number | null;
   is_public: boolean;
-  is_deleted?: boolean;
+  is_active?: boolean;
 }
 
-/**
- * Computed Coupon Properties
- * Derived from base Coupon data
- */
-export interface CouponWithStatus extends Coupon {
-  status: CouponStatus;
-  isExpired: boolean;
-  isActive: boolean;
-  isUpcoming: boolean;
-  usagePercentage: number; // 0-100
-  isLimitReached: boolean;
-  daysUntilExpiry: number;
-}
-
-/**
- * API Response Types
- */
 export interface CouponsResponse {
   data: Coupon[];
   pagination: {
@@ -53,98 +48,4 @@ export interface CouponsResponse {
     limit: number;
     pages: number;
   };
-}
-
-/**
- * Filter State
- */
-export interface CouponFilters {
-  search: string;
-  status: "all" | CouponStatus;
-  type: "all" | DiscountType;
-  visibility: "all" | "public" | "private";
-  usage: "all" | "limited" | "unlimited";
-}
-
-/**
- * Pagination State
- */
-export interface PaginationState {
-  page: number;
-  limit: number;
-  total: number;
-}
-
-/**
- * Sorting State
- */
-export interface SortState {
-  field: SortField;
-  order: SortOrder;
-}
-
-/**
- * API Query Parameters
- */
-export interface CouponQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: string;
-  type?: DiscountType;
-  sort?: SortField;
-  order?: SortOrder;
-}
-
-/**
- * Action Payloads
- */
-export interface CreateCouponPayload {
-  code: string;
-  discount_type: DiscountType;
-  discount_value: number;
-  min_purchase_amount: number;
-  max_discount_amount: number;
-  valid_from: string;
-  valid_to: string;
-  usage_limit: number | null;
-  is_public: boolean;
-  is_active: boolean;
-  image?: File;
-}
-
-export interface UpdateCouponPayload extends Partial<CreateCouponPayload> {
-  id: string;
-}
-
-export interface DeleteCouponPayload {
-  id: string;
-}
-
-export interface TogglePublicPayload {
-  id: string;
-  is_public: boolean;
-}
-
-/**
- * UI State
- */
-export interface CouponsUIState {
-  isLoading: boolean;
-  isError: boolean;
-  error: string | null;
-  selectedCoupon: Coupon | null;
-  isModalOpen: boolean;
-  modalMode: "view" | "edit" | "create";
-}
-
-/**
- * Table Column Configuration
- */
-export interface TableColumn {
-  key: keyof Coupon;
-  label: string;
-  sortable: boolean;
-  width?: string;
-  render?: (value: unknown, coupon: Coupon) => React.ReactNode;
 }

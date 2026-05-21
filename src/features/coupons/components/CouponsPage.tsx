@@ -1,241 +1,143 @@
-/**
- * CouponsPage Component
- * Main page for coupon management with responsive, compact layout
- */
-
-import { AlertTriangle } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast";
-import { useConfirmation, useCouponActions } from "../hooks/useCouponActions";
-import { useCouponFilters } from "../hooks/useCouponFilters";
-import { useCoupons, usePagination } from "../hooks/useCoupons";
+import { APP_ROUTES } from "@/lib/constants";
+import { useCouponFilters, useCoupons, usePagination } from "../hooks/useCoupons";
 import type { Coupon } from "../types/coupon";
+import { CouponDrawer } from "./CouponDrawer";
+import { CouponFormDrawer } from "./CouponFormDrawer";
 import { CouponsFilters } from "./CouponsFilters";
-import { CouponsHeader } from "./CouponsHeader";
 import { CouponsPagination } from "./CouponsPagination";
 import { CouponsTable } from "./CouponsTable";
-import { CreateCouponModal } from "./CreateCouponModal";
-import { EmptyState } from "./EmptyState";
-import { ViewCouponDrawer } from "./ViewCouponDrawer";
 
 export function CouponsPage() {
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  // Hooks
-  const { showToast } = useToast();
-  const {
-    filters,
-    updateSearch,
-    updateStatus,
-    updateType,
-    updateVisibility,
-    updateUsage,
-    resetFilters,
-    hasActiveFilters,
-  } = useCouponFilters();
+  const { search, setSearch, resetFilters, hasActiveFilters } = useCouponFilters();
   const { page, limit, goToPage, setPageSize } = usePagination(1, 10);
 
   const { coupons, total, pages, isLoading, isError, error, refetch } = useCoupons({
     page,
     limit,
-    search: filters.search,
-    status: filters.status === "all" ? undefined : filters.status,
-    type: filters.type === "all" ? undefined : filters.type,
+    search: search || undefined,
   });
-  const { deleteAction } = useCouponActions();
-  const {
-    isOpen: isConfirmOpen,
-    isConfirming,
-    confirmData,
-    openConfirmation,
-    handleConfirm,
-    handleCancel,
-  } = useConfirmation();
 
-  // Handlers
-  const handleCreateClick = useCallback(() => {
-    setSelectedCoupon(null);
-    setIsCreateModalOpen(true);
-  }, []);
-
-  const handleViewClick = useCallback((coupon: Coupon) => {
+  const handleViewDetails = useCallback((coupon: Coupon) => {
     setSelectedCoupon(coupon);
-    setIsViewDrawerOpen(true);
+    setIsDrawerOpen(true);
   }, []);
 
-  const handleEditClick = useCallback((coupon: Coupon) => {
-    setSelectedCoupon(coupon);
-    setIsEditModalOpen(true);
+  const handleCreate = useCallback(() => {
+    setEditingCoupon(null);
+    setIsFormOpen(true);
   }, []);
 
-  const handleDeleteClick = useCallback(
-    (coupon: Coupon) => {
-      openConfirmation({
-        title: "Delete Coupon",
-        description: `Are you sure you want to delete "${coupon.code}"? This action cannot be undone.`,
-        onConfirm: async () => {
-          try {
-            await deleteAction(coupon.id);
-
-            showToast(`Coupon "${coupon.code}" deleted successfully`, "success", 3000);
-            await refetch();
-          } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : "Failed to delete coupon";
-            showToast(errorMessage, "error", 4000);
-            console.error("Failed to delete coupon:", err);
-            throw err;
-          }
-        },
-        confirmText: "Delete",
-        cancelText: "Cancel",
-        isDangerous: true,
-      });
-    },
-    [deleteAction, refetch, openConfirmation, showToast],
-  );
-
-  const handleExportClick = useCallback(() => {
-    // TODO: Implement export functionality
-    console.log("Export clicked");
+  const handleEdit = useCallback((coupon: Coupon) => {
+    setEditingCoupon(coupon);
+    setIsFormOpen(true);
   }, []);
 
-  // Render
   return (
-    <>
-      <div className="flex flex-col h-full w-full bg-background">
-        {/* Header */}
-        <CouponsHeader onCreateClick={handleCreateClick} onExportClick={handleExportClick} />
+    <div className="flex flex-col h-full w-full bg-background space-y-4">
+      {/* Title Header Section */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3">
+        <div className="min-w-0 flex-1">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to={APP_ROUTES.DASHBOARD}>Dashboard</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Coupons</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <Button type="button" size="sm" className="text-xs" onClick={handleCreate}>
+          <Plus className="size-3" />
+          New Coupon
+        </Button>
+      </div>
 
-        {/* Filters */}
-        <CouponsFilters
-          filters={filters}
-          onSearchChange={updateSearch}
-          onStatusChange={updateStatus}
-          onTypeChange={updateType}
-          onVisibilityChange={updateVisibility}
-          onUsageChange={updateUsage}
-          onReset={resetFilters}
-          hasActiveFilters={hasActiveFilters}
-        />
-
-        {/* Content */}
-        <div className="flex-1 overflow-auto w-full scrollbar-hide">
-          {isError && (
-            <div className="m-4 p-3 bg-destructive/10 border border-destructive/30 rounded-md">
-              <p className="text-xs text-destructive">
-                {error || "Failed to load coupons. Please try again."}
-              </p>
-            </div>
-          )}
-
-          {coupons.length === 0 && !isLoading ? (
-            <EmptyState isSearchEmpty={hasActiveFilters} onCreateClick={handleCreateClick} />
-          ) : (
-            <CouponsTable
-              coupons={coupons}
-              isLoading={isLoading}
-              onView={handleViewClick}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
-            />
-          )}
+      {/* Filters & Content Section */}
+      <div className="flex-1 flex flex-col min-h-0 px-4">
+        <div className="rounded-t-lg border border-border bg-card">
+          <CouponsFilters
+            search={search}
+            onSearchChange={setSearch}
+            hasActiveFilters={hasActiveFilters}
+            onReset={resetFilters}
+          />
         </div>
 
-        {/* Pagination */}
-        {coupons.length > 0 && (
-          <CouponsPagination
-            page={page}
-            pages={pages}
-            total={total}
-            limit={limit}
-            onPageChange={goToPage}
-            onLimitChange={setPageSize}
+        {/* Table Wrapper */}
+        <div className="flex-1 min-h-[300px]">
+          <CouponsTable
+            coupons={coupons}
+            isLoading={isLoading}
+            isError={isError}
+            error={error}
+            onRetry={refetch}
+            onViewDetails={handleViewDetails}
+            onEdit={handleEdit}
+            hasActiveFilters={hasActiveFilters}
+            onResetFilters={resetFilters}
           />
-        )}
+        </div>
 
-        {/* Confirmation Dialog */}
-        {isConfirmOpen && confirmData && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            aria-modal="true"
-            role="dialog"
-            aria-labelledby="delete-coupon-title"
-            aria-describedby="delete-coupon-description"
-          >
-            <div className="w-full max-w-sm rounded-lg border border-border bg-card shadow-xl">
-              <div className="p-5">
-                <div className="mb-4 flex items-start gap-3">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                    <AlertTriangle className="size-4" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h2 id="delete-coupon-title" className="text-sm font-semibold text-foreground">
-                      {confirmData.title}
-                    </h2>
-                    <p
-                      id="delete-coupon-description"
-                      className="mt-1 text-xs leading-5 text-muted-foreground"
-                    >
-                      {confirmData.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 justify-end">
-                  <Button
-                    type="button"
-                    onClick={handleCancel}
-                    variant="outline"
-                    size="sm"
-                    disabled={isConfirming}
-                  >
-                    {confirmData.cancelText || "Cancel"}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleConfirm}
-                    variant={confirmData.isDangerous ? "destructive" : "default"}
-                    size="sm"
-                    isLoading={isConfirming}
-                    disabled={isConfirming}
-                  >
-                    {isConfirming ? "Deleting..." : confirmData.confirmText || "Confirm"}
-                  </Button>
-                </div>
-              </div>
-            </div>
+        {/* Pagination Section */}
+        {!isLoading && !isError && coupons.length > 0 && (
+          <div className="mt-2">
+            <CouponsPagination
+              page={page}
+              pages={pages}
+              total={total}
+              limit={limit}
+              onPageChange={goToPage}
+              onLimitChange={setPageSize}
+            />
           </div>
         )}
       </div>
-      {/* View Coupon Drawer and Modals outside main layout */}
-      <ViewCouponDrawer
+
+      {/* Details Drawer */}
+      <CouponDrawer
         coupon={selectedCoupon}
-        isOpen={isViewDrawerOpen}
-        onClose={() => setIsViewDrawerOpen(false)}
-      />
-      <CreateCouponModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={() => {
-          refetch();
-        }}
-      />
-      <CreateCouponModal
-        isOpen={isEditModalOpen}
-        mode="edit"
-        coupon={selectedCoupon}
+        isOpen={isDrawerOpen}
         onClose={() => {
-          setIsEditModalOpen(false);
+          setIsDrawerOpen(false);
           setSelectedCoupon(null);
         }}
+      />
+
+      <CouponFormDrawer
+        coupon={editingCoupon}
+        isOpen={isFormOpen}
+        onClose={() => {
+          setIsFormOpen(false);
+          setEditingCoupon(null);
+        }}
         onSuccess={() => {
           refetch();
         }}
       />
-    </>
+    </div>
   );
 }
+
+export default CouponsPage;
