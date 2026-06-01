@@ -10,7 +10,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_ROUTES } from "@/lib/constants";
+import { API_ENDPOINTS } from "@/lib/apiEndpoints";
 import type { DashboardData } from "../types/dashboard.types";
 
 type RawDashboardResponse = {
@@ -26,7 +26,6 @@ const normalizeDashboardResponse = (rawResult: unknown): DashboardData => {
     typeof value === "object" && value !== null;
 
   if (!isRecord(rawResult)) {
-    console.warn("Dashboard API: Invalid response format", rawResult);
     return {
       pending_intent_count: 0,
       special_intrest_product_count: 0,
@@ -37,8 +36,6 @@ const normalizeDashboardResponse = (rawResult: unknown): DashboardData => {
 
   const raw = rawResult as RawDashboardResponse;
   const payload = raw.data ?? raw;
-
-  console.log("Dashboard API: Normalized response", payload);
 
   return {
     pending_intent_count: payload.pending_intent_count ?? 0,
@@ -70,7 +67,6 @@ export const dashboardApi = createApi({
     // Attach the auth token to every request
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
-      console.log("Dashboard API: Auth token present:", !!token);
       if (token) {
         // Backend expects "Token" scheme (not "Bearer")
         headers.set("Authorization", `Token ${token}`);
@@ -85,22 +81,16 @@ export const dashboardApi = createApi({
     // Fetch dashboard header data
     getDashboardHeader: builder.query<DashboardData, void>({
       query: () => {
-        const url = API_ROUTES.DASHBOARD.HEADER;
-        console.log("Dashboard API: Fetching from", url);
+        const url = API_ENDPOINTS.DASHBOARD.HEADER;
         return {
           url,
           method: "GET",
         };
       },
       transformResponse: (rawResult) => {
-        console.log("Dashboard API: Raw response received:", rawResult);
         return normalizeDashboardResponse(rawResult);
       },
       transformErrorResponse: (response) => {
-        console.error("Dashboard API: Error response", {
-          status: response.status,
-          data: response.data,
-        });
         return response;
       },
       // Fallback to mock data on error (for development)
@@ -108,7 +98,6 @@ export const dashboardApi = createApi({
         try {
           await queryFulfilled;
         } catch (_error) {
-          console.warn("Dashboard API: Using mock data due to error");
           // Dispatch a fulfilled action with mock data
           dispatch(
             dashboardApi.util.updateQueryData(

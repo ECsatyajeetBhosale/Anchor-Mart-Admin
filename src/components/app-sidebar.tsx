@@ -58,6 +58,11 @@ const data = {
       ],
     },
     {
+      title: "Categories",
+      url: APP_ROUTES.CATEGORIES,
+      icon: <BoxesIcon />,
+    },
+    {
       title: "Coupons",
       url: APP_ROUTES.COUPONS,
       icon: <TicketIcon />,

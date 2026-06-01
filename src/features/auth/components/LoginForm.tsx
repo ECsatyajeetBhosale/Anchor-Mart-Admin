@@ -48,9 +48,7 @@ export function LoginForm() {
   // Called by handleSubmit ONLY when all fields pass Zod validation
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      // Fire the API call — RTK Query handles the fetch under the hood
       const result = await loginUser(values).unwrap();
-      console.log("Login response:", result);
 
       // Save the returned token + user info to the Redux store
       dispatch(login(result));

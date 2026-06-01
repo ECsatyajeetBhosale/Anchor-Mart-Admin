@@ -2,20 +2,10 @@
  * features/auth/api/authApi.ts
  *
  * RTK Query API slice for authentication.
- *
- * RTK Query handles everything for us automatically:
- *   - Making the HTTP request
- *   - Caching the result
- *   - Tracking loading / error / success states
- *
- * How it works:
- *   1. createApi() defines the base URL and all endpoints
- *   2. Each endpoint becomes a hook we can use in components
- *   3. `loginMutation` → useLoginMutation() hook
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_ROUTES } from "@/lib/constants";
+import { API_ENDPOINTS } from "@/lib/apiEndpoints";
 import { APP_TEXT } from "@/lib/messages";
 import type { LoginRequest, LoginResponse } from "../types/auth.types";
 
@@ -92,14 +82,12 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL,
 
-    // This runs before every request — attach the auth token if we have one
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
       if (token) {
         // Backend expects "Token" scheme (not "Bearer")
         headers.set("Authorization", `Token ${token}`);
       }
-      // Required for ngrok to bypass the interstitial browser warning
       headers.set("ngrok-skip-browser-warning", "true");
       return headers;
     },
@@ -107,11 +95,9 @@ export const authApi = createApi({
 
   // All API endpoints for the auth feature
   endpoints: (builder) => ({
-    // "mutation" = an action that changes data (POST, PUT, DELETE)
-    // "query"    = an action that reads data (GET)
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
-        url: API_ROUTES.AUTH.LOGIN,
+        url: API_ENDPOINTS.AUTH.LOGIN,
         method: "POST",
         body: credentials,
       }),
@@ -121,5 +107,4 @@ export const authApi = createApi({
   }),
 });
 
-// Export the auto-generated hook — use this inside React components
 export const { useLoginMutation } = authApi;

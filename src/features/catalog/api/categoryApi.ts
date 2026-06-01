@@ -1,9 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { API_ENDPOINTS } from "@/lib/apiEndpoints";
-import type { Coupon, CouponPayload, CouponQueryParams, CouponsResponse } from "../types/coupon";
+import type {
+  CategoriesResponse,
+  CategoryPayload,
+  CategoryQueryParams,
+  CategoryResponse,
+} from "../types/category";
 
-export const couponsApi = createApi({
-  reducerPath: "couponsApi",
+export const categoryApi = createApi({
+  reducerPath: "categoryApi",
+  tagTypes: ["Categories"],
 
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.MODE === "development" ? "" : import.meta.env.VITE_API_BASE_URL,
@@ -19,7 +25,7 @@ export const couponsApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getCoupons: builder.query<CouponsResponse, CouponQueryParams>({
+    getCategories: builder.query<CategoriesResponse, CategoryQueryParams>({
       query: (params) => {
         const searchParams = new URLSearchParams();
 
@@ -29,19 +35,22 @@ export const couponsApi = createApi({
         if (params.search) {
           searchParams.append("search", params.search);
         }
-        if (params.status) {
-          searchParams.append("status", params.status);
-        }
-        if (params.type) {
-          searchParams.append("type", params.type);
-        }
 
         const queryString = searchParams.toString();
 
         return {
-          url: `${API_ENDPOINTS.COUPONS.LIST}${queryString ? `?${queryString}` : ""}`,
+          url: `${API_ENDPOINTS.CATALOG.GET_CATEGORIES}${queryString ? `?${queryString}` : ""}`,
           method: "GET",
         };
+      },
+      providesTags: (result, _error, _arg) => {
+        const tags: Array<"Categories" | { type: "Categories"; id: string }> = ["Categories"];
+        if (result?.data) {
+          result.data.forEach((category) => {
+            tags.push({ type: "Categories", id: category.id });
+          });
+        }
+        return tags;
       },
       transformResponse: (rawResult: unknown, _meta, arg) => {
         const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -55,29 +64,11 @@ export const couponsApi = createApi({
         }
 
         const raw = rawResult as Record<string, unknown>;
+        const payload = isRecord(raw.results) ? raw.results : raw;
 
-        const payload = (isRecord(raw.data) || Array.isArray(raw.data) ? raw.data : raw) as Record<
-          string,
-          unknown
-        >;
+        const resultsArray = Array.isArray(payload.data) ? payload.data : [];
 
-        const resultsArray = Array.isArray(payload)
-          ? payload
-          : Array.isArray(payload.results)
-            ? (payload.results as Coupon[])
-            : Array.isArray(payload.data)
-              ? (payload.data as Coupon[])
-              : [];
-
-        const total =
-          typeof payload.count === "number"
-            ? payload.count
-            : typeof raw.count === "number"
-              ? raw.count
-              : isRecord(raw.pagination) && typeof raw.pagination.total === "number"
-                ? raw.pagination.total
-                : resultsArray.length;
-
+        const total = typeof raw.count === "number" ? raw.count : resultsArray.length;
         const limit = arg?.limit || 10;
         const page = arg?.page || 1;
         const pages = Math.max(1, Math.ceil(total / limit));
@@ -92,40 +83,27 @@ export const couponsApi = createApi({
           },
         };
       },
-      transformErrorResponse: (response) => {
-        return response;
-      },
     }),
 
-    getCouponById: builder.query<Coupon, string>({
-      query: (id) => ({
-        url: API_ENDPOINTS.COUPONS.DETAIL(id),
-        method: "GET",
-      }),
-    }),
-
-    createCoupon: builder.mutation<Coupon, CouponPayload>({
+    addCategory: builder.mutation<CategoryResponse, CategoryPayload>({
       query: (payload) => ({
-        url: API_ENDPOINTS.COUPONS.CREATE,
+        url: API_ENDPOINTS.CATALOG.ADD_CATEGORY,
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ["Categories"],
     }),
 
-    updateCoupon: builder.mutation<Coupon, { id: string; payload: CouponPayload }>({
+    updateCategory: builder.mutation<CategoryResponse, { id: string; payload: CategoryPayload }>({
       query: ({ id, payload }) => ({
-        url: API_ENDPOINTS.COUPONS.UPDATE(id),
+        url: API_ENDPOINTS.CATALOG.UPDATE_CATEGORY(id),
         method: "PATCH",
         body: payload,
       }),
+      invalidatesTags: (_result, _error, { id }) => ["Categories", { type: "Categories", id }],
     }),
   }),
 });
 
-export const {
-  useCreateCouponMutation,
-  useGetCouponByIdQuery,
-  useGetCouponsQuery,
-  useLazyGetCouponsQuery,
-  useUpdateCouponMutation,
-} = couponsApi;
+export const { useGetCategoriesQuery, useAddCategoryMutation, useUpdateCategoryMutation } =
+  categoryApi;

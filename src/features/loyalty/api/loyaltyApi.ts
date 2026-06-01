@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { API_ENDPOINTS } from "@/lib/apiEndpoints";
 import type { LoyaltyQueryParams, LoyaltyResponse, SailorLoyalty } from "../types/loyalty";
 
 export const loyaltyApi = createApi({
@@ -11,7 +12,6 @@ export const loyaltyApi = createApi({
     // Attach token authorization
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
-      console.log("Loyalty API: Auth token present:", !!token);
       if (token) {
         headers.set("Authorization", `Token ${token}`);
       }
@@ -37,22 +37,17 @@ export const loyaltyApi = createApi({
         }
 
         const queryString = searchParams.toString();
-        const url = `/api/superadmin/orders/bonus-points/${queryString ? `?${queryString}` : ""}`;
 
-        console.log("Loyalty API: Fetching from", url, "with params:", params);
         return {
-          url,
+          url: `${API_ENDPOINTS.LOYALTY.POINTS}${queryString ? `?${queryString}` : ""}`,
           method: "GET",
         };
       },
       transformResponse: (rawResult: unknown, _meta, arg) => {
-        console.log("Loyalty API: Raw response received:", rawResult);
-
         const isRecord = (value: unknown): value is Record<string, unknown> =>
           typeof value === "object" && value !== null;
 
         if (!isRecord(rawResult)) {
-          console.warn("Loyalty API: Invalid response format", rawResult);
           return {
             data: [],
             pagination: { total: 0, page: 1, limit: 10, pages: 0 },
@@ -114,10 +109,6 @@ export const loyaltyApi = createApi({
         };
       },
       transformErrorResponse: (response) => {
-        console.error("Loyalty API: Error response", {
-          status: response.status,
-          data: response.data,
-        });
         return response;
       },
     }),

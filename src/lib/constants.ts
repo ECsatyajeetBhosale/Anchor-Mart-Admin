@@ -5,7 +5,8 @@
  * Never hardcode paths or API URLs directly in components.
  *
  * Usage:
- *   import { APP_ROUTES, API_ROUTES } from "@/lib/constants";
+ *   import { APP_ROUTES } from "@/lib/constants";
+ *   import { API_ENDPOINTS } from "@/lib/apiEndpoints";
  *   navigate(APP_ROUTES.LOGIN);
  *   authApi.endpoints.login — base URL is in .env
  *
@@ -21,14 +22,5 @@ export const APP_ROUTES = {
   COUPONS: "/coupons",
   NOTIFICATIONS: "/notifications",
   LOYALTY_POINTS: "/loyalty/points",
-} as const;
-
-// ─── API endpoint paths (relative to VITE_API_BASE_URL) ──────────────────────
-export const API_ROUTES = {
-  AUTH: {
-    LOGIN: "api/superadmin/admin/login/",
-  },
-  DASHBOARD: {
-    HEADER: "api/superadmin/dashboard/dashboard/",
-  },
+  CATEGORIES: "/categories",
 } as const;

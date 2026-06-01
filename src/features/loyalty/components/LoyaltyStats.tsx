@@ -28,7 +28,7 @@ export function LoyaltyStats({ sailors, totalSailors, isLoading }: LoyaltyStatsP
 
       {/* Total Points (Page) */}
       <StatCard
-        title="Page Total Points"
+        title="Total Points"
         value={totalPoints.toLocaleString()}
         description="Combined loyalty & referral"
         icon={<Award className="size-4 text-purple-500" />}
@@ -37,7 +37,7 @@ export function LoyaltyStats({ sailors, totalSailors, isLoading }: LoyaltyStatsP
 
       {/* Loyalty Points (Page) */}
       <StatCard
-        title="Page Loyalty Points"
+        title="Loyalty Points"
         value={totalLoyaltyPoints.toLocaleString()}
         description="Earned from purchases"
         icon={<Award className="size-4 text-emerald-500" />}
@@ -46,7 +46,7 @@ export function LoyaltyStats({ sailors, totalSailors, isLoading }: LoyaltyStatsP
 
       {/* Referral Points (Page) */}
       <StatCard
-        title="Page Referral Points"
+        title="Referral Points"
         value={totalReferralPoints.toLocaleString()}
         description="Earned from referrals"
         icon={<Share2 className="size-4 text-blue-500" />}
