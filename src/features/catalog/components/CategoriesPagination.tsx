@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CategoriesPaginationProps {
@@ -22,73 +22,78 @@ export function CategoriesPagination({
   const endItem = Math.min(page * limit, total);
 
   return (
-    <div className="flex flex-col gap-3 rounded-b-lg border border-t-0 border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-xs text-muted-foreground">
-        Showing {startItem} to {endItem} of {total} categories
-      </div>
+    <div className="flex items-center justify-between px-4 py-3 border border-t-0 border-border bg-muted/20 text-xs shrink-0 rounded-b-lg">
+      <div className="flex items-center gap-3">
+        <div className="text-muted-foreground">
+          {total === 0 ? (
+            <span>No records</span>
+          ) : (
+            <>
+              Showing <span className="font-medium text-foreground">{startItem}</span> to{" "}
+              <span className="font-medium text-foreground">{endItem}</span> of{" "}
+              <span className="font-medium text-foreground">{total}</span> categories
+            </>
+          )}
+        </div>
 
-      <div className="flex items-center gap-2">
         <select
           value={limit}
           onChange={(e) => onLimitChange(Number(e.target.value))}
-          className="h-8 rounded-lg border border-input bg-background px-2 text-xs text-foreground outline-none focus:ring-1 focus:ring-ring"
+          className="px-2 py-1 text-xs border border-input rounded-md hover:border-input focus:outline-none focus:ring-1 focus:ring-ring bg-background text-foreground"
+          aria-label="Rows per page"
         >
-          <option value={10}>10 per page</option>
-          <option value={25}>25 per page</option>
-          <option value={50}>50 per page</option>
+          <option value={10}>10/page</option>
+          <option value={20}>20/page</option>
+          <option value={50}>50/page</option>
+          <option value={100}>100/page</option>
         </select>
+      </div>
 
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-sm"
-            onClick={() => onPageChange(page - 1)}
-            disabled={page === 1}
-            className="text-xs"
-          >
-            <ChevronLeftIcon className="size-3.5" />
-          </Button>
+      <div className="flex items-center gap-1">
+        <Button
+          onClick={() => onPageChange(page - 1)}
+          disabled={page === 1}
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0"
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
 
-          <div className="flex items-center gap-1 px-2">
-            {Array.from({ length: Math.min(5, pages) }, (_, i) => {
-              let pageNum: number;
-              if (pages <= 5) {
-                pageNum = i + 1;
-              } else if (page <= 3) {
-                pageNum = i + 1;
-              } else if (page >= pages - 2) {
-                pageNum = pages - 4 + i;
-              } else {
-                pageNum = page - 2 + i;
-              }
+        {Array.from({ length: Math.min(5, pages) }, (_, i) => {
+          let pageNum: number;
+          if (pages <= 5) {
+            pageNum = i + 1;
+          } else if (page <= 3) {
+            pageNum = i + 1;
+          } else if (page >= pages - 2) {
+            pageNum = pages - 4 + i;
+          } else {
+            pageNum = page - 2 + i;
+          }
 
-              return (
-                <Button
-                  key={pageNum}
-                  type="button"
-                  variant={pageNum === page ? "default" : "outline"}
-                  size="icon-sm"
-                  onClick={() => onPageChange(pageNum)}
-                  className="text-xs"
-                >
-                  {pageNum}
-                </Button>
-              );
-            })}
-          </div>
+          return (
+            <Button
+              key={pageNum}
+              onClick={() => onPageChange(pageNum)}
+              variant={pageNum === page ? "default" : "outline"}
+              size="sm"
+              className="h-8 w-8 p-0"
+            >
+              {pageNum}
+            </Button>
+          );
+        })}
 
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-sm"
-            onClick={() => onPageChange(page + 1)}
-            disabled={page === pages}
-            className="text-xs"
-          >
-            <ChevronRightIcon className="size-3.5" />
-          </Button>
-        </div>
+        <Button
+          onClick={() => onPageChange(page + 1)}
+          disabled={page === pages}
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0"
+        >
+          <ChevronRight className="size-4" />
+        </Button>
       </div>
     </div>
   );

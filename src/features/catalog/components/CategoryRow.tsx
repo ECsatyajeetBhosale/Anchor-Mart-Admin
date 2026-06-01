@@ -1,5 +1,7 @@
-import { EditIcon, EyeIcon } from "lucide-react";
+import { EditIcon, EyeIcon, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { useDeleteCategoryMutation } from "../api/categoryApi";
 import type { Category } from "../types/category";
 
 interface CategoryRowProps {
@@ -9,6 +11,22 @@ interface CategoryRowProps {
 }
 
 export function CategoryRow({ category, onViewDetails, onEdit }: CategoryRowProps) {
+  const { showToast } = useToast();
+  const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
+
+  const handleDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
+      return;
+    }
+
+    try {
+      await deleteCategory(category.id).unwrap();
+      showToast("Category deleted successfully", "success", 2500);
+    } catch (error) {
+      console.error("Delete category error:", error);
+      showToast("Failed to delete category", "error", 3000);
+    }
+  };
   return (
     <tr className="border-b border-border hover:bg-muted/50 transition-colors">
       <td className="px-3 py-2">
@@ -61,6 +79,16 @@ export function CategoryRow({ category, onViewDetails, onEdit }: CategoryRowProp
             title="Edit category"
           >
             <EditIcon className="size-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            title="Delete category"
+          >
+            <TrashIcon className="size-3.5" />
           </Button>
         </div>
       </td>
