@@ -163,7 +163,7 @@ export function DataTable<T extends { id?: string }>({
       </div>
 
       {/* Pagination */}
-      {showPagination && pages > 1 && onPageChange && (
+      {showPagination && onPageChange && (
         <Pagination
           page={page}
           pages={pages}

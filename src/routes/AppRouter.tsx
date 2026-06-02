@@ -16,10 +16,10 @@ import { Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/common/Layout";
 import { CategoriesPage } from "@/features/catalog";
 import { NotificationsPage } from "@/features/notifications";
+import { ProductsPage } from "@/features/products";
 import { APP_ROUTES } from "@/lib/constants";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { LoginPage } from "@/pages/LoginPage";
-import { ProductsPage } from "@/pages/ProductsPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
 export function AppRouter() {

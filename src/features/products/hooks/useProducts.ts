@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useGetCategoriesQuery } from "../api/categoryApi";
-import type { Category } from "../types/category";
+import { useGetProductsQuery } from "../api/productApi";
+import type { Product } from "../types/product";
 
-interface UseCategoriesReturn {
-  categories: Category[];
+interface UseProductsReturn {
+  products: Product[];
   total: number;
   page: number;
   limit: number;
@@ -15,22 +15,22 @@ interface UseCategoriesReturn {
   refetch: () => void;
 }
 
-export function useCategories(params: {
+export function useProducts(params: {
   page: number;
   limit: number;
   search?: string;
-}): UseCategoriesReturn {
-  const { data, isLoading, isFetching, isError, refetch } = useGetCategoriesQuery({
+}): UseProductsReturn {
+  const { data, isLoading, isFetching, isError, refetch } = useGetProductsQuery({
     page: params.page,
     limit: params.limit,
     search: params.search,
   });
 
-  const categories = data?.data || [];
+  const products = data?.data || [];
   const pagination = data?.pagination || { total: 0, page: 1, limit: 10, pages: 0 };
 
   return {
-    categories,
+    products,
     total: pagination.total,
     page: pagination.page,
     limit: pagination.limit,
@@ -38,19 +38,19 @@ export function useCategories(params: {
     isLoading,
     isFetching,
     isError,
-    error: isError ? "Failed to load categories" : null,
+    error: isError ? "Failed to load products" : null,
     refetch: () => refetch(),
   };
 }
 
-interface UseCategoryFiltersReturn {
+interface UseProductFiltersReturn {
   search: string;
   setSearch: (value: string) => void;
   resetFilters: () => void;
   hasActiveFilters: boolean;
 }
 
-export function useCategoryFilters(): UseCategoryFiltersReturn {
+export function useProductFilters(): UseProductFiltersReturn {
   const [search, setSearch] = useState("");
 
   const hasActiveFilters = search !== "";

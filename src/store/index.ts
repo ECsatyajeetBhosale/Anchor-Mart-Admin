@@ -9,6 +9,7 @@ import { authApi } from "@/features/auth/api/authApi";
 import authReducer from "@/features/auth/slice/authSlice";
 import { categoryApi } from "@/features/catalog/api/categoryApi";
 import { dashboardApi } from "@/features/dashboard/api/dashboardApi";
+import { productApi } from "@/features/products/api/productApi";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [categoryApi.reducerPath]: categoryApi.reducer,
+    [productApi.reducerPath]: productApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -23,6 +25,7 @@ export const store = configureStore({
       authApi.middleware,
       dashboardApi.middleware,
       categoryApi.middleware,
+      productApi.middleware,
     ),
 });
 
