@@ -1,19 +1,10 @@
 "use client";
 
-import {
-  BarChart3Icon,
-  BoxesIcon,
-  HomeIcon,
-  ShoppingCartIcon,
-  StoreIcon,
-  TagsIcon,
-  UsersIcon,
-} from "lucide-react";
+import { BoxesIcon, HomeIcon, PackageIcon, ShoppingCartIcon, StoreIcon } from "lucide-react";
 import type * as React from "react";
 import { Link } from "react-router-dom";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -59,6 +50,11 @@ const data = {
       title: "Categories",
       url: APP_ROUTES.CATEGORIES,
       icon: <BoxesIcon />,
+    },
+    {
+      title: "Products",
+      url: APP_ROUTES.PRODUCTS,
+      icon: <PackageIcon />,
     },
   ],
   navSecondary: [],

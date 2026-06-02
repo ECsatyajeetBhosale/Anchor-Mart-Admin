@@ -21,4 +21,5 @@ export const APP_ROUTES = {
   DASHBOARD: "/dashboard",
   NOTIFICATIONS: "/notifications",
   CATEGORIES: "/categories",
+  PRODUCTS: "/products",
 } as const;

@@ -51,6 +51,14 @@
   `type Props` definition.
 - **Reusable UI elements** (Button, Input, etc.) live in `src/components/ui/`.
 - **Shared layout/structural components** live in `src/components/common/`.
+- **Use existing shadcn UI components first.** When building new features or components,
+  prefer the shared shadcn-style components from `src/components/ui/` instead of creating
+  raw HTML controls or one-off UI. For example, use the existing `Button`, `Input`,
+  `Sheet`, `Table`, `DataTable`, `Pagination`, and `SearchInput` components where they fit.
+- **Reuse common table, search, and navigation components.** If a feature needs a table,
+  use the shared table/data-table components. If it needs search or pagination, use
+  `SearchInput` and `Pagination`/`DataTable` rather than rebuilding them. Navigation links
+  should use the existing route constants and shared navigation/sidebar patterns.
 
 ## 📦 Imports
 

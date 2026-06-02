@@ -19,6 +19,7 @@ import { NotificationsPage } from "@/features/notifications";
 import { APP_ROUTES } from "@/lib/constants";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { LoginPage } from "@/pages/LoginPage";
+import { ProductsPage } from "@/pages/ProductsPage";
 import { ProtectedRoute } from "@/routes/ProtectedRoute";
 
 export function AppRouter() {
@@ -34,6 +35,7 @@ export function AppRouter() {
           <Route path={APP_ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
           <Route path={APP_ROUTES.CATEGORIES} element={<CategoriesPage />} />
+          <Route path={APP_ROUTES.PRODUCTS} element={<ProductsPage />} />
         </Route>
       </Route>
 

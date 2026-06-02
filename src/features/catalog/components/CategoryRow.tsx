@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { AppTooltip } from "@/components/ui/app-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
@@ -68,34 +69,32 @@ export function CategoryRow({ category, onViewDetails, onEdit }: CategoryRowProp
         </td>
         <td className="px-3 py-2 text-right">
           <div className="flex items-center justify-end gap-1">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => onViewDetails(category)}
-              title="View details"
-            >
-              <EyeIcon className="size-3.5" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => onEdit(category)}
-              title="Edit category"
-            >
-              <EditIcon className="size-3.5" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={isDeleting}
-              title="Delete category"
-            >
-              <TrashIcon className="size-3.5" />
-            </Button>
+            <AppTooltip content="View details">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => onViewDetails(category)}
+              >
+                <EyeIcon className="size-3.5" />
+              </Button>
+            </AppTooltip>
+            <AppTooltip content="Edit category">
+              <Button type="button" variant="ghost" size="icon-sm" onClick={() => onEdit(category)}>
+                <EditIcon className="size-3.5" />
+              </Button>
+            </AppTooltip>
+            <AppTooltip content="Delete category">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={isDeleting}
+              >
+                <TrashIcon className="size-3.5" />
+              </Button>
+            </AppTooltip>
           </div>
         </td>
       </tr>
