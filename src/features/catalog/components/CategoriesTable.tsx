@@ -1,14 +1,10 @@
+import { EditIcon, EyeIcon, TrashIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { type Column, DataTable } from "@/components/ui/data-table";
+import { toast } from "@/lib/toast";
+import { useDeleteCategoryMutation } from "../api/categoryApi";
 import type { Category } from "../types/category";
-import { CategoryRow } from "./CategoryRow";
-
-const skeletonRows = [
-  "category-skeleton-1",
-  "category-skeleton-2",
-  "category-skeleton-3",
-  "category-skeleton-4",
-  "category-skeleton-5",
-];
 
 interface CategoriesTableProps {
   categories: Category[];
@@ -20,6 +16,12 @@ interface CategoriesTableProps {
   onEdit: (category: Category) => void;
   hasActiveFilters?: boolean;
   onResetFilters?: () => void;
+  page?: number;
+  pages?: number;
+  total?: number;
+  limit?: number;
+  onPageChange?: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
 }
 
 export function CategoriesTable({
@@ -32,89 +34,140 @@ export function CategoriesTable({
   onEdit,
   hasActiveFilters = false,
   onResetFilters,
+  page = 1,
+  pages = 1,
+  total = 0,
+  limit = 10,
+  onPageChange,
+  onLimitChange,
 }: CategoriesTableProps) {
-  if (isLoading) {
-    return (
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead className="bg-muted border-b border-border sticky top-0">
-            <tr>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground">Name</th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground">
-                Description
-              </th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground">
-                Created At
-              </th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground">Status</th>
-              <th className="px-3 py-2 text-right font-semibold text-muted-foreground">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {skeletonRows.map((rowKey) => (
-              <tr key={rowKey} className="border-b border-border">
-                <td colSpan={5} className="px-3 py-2">
-                  <div className="h-3 bg-muted rounded animate-pulse" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
+  const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
 
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 px-4">
-        <p className="text-sm text-destructive mb-4">{error || "Failed to load categories"}</p>
-        {onRetry && (
-          <Button type="button" onClick={onRetry} size="sm" className="text-xs">
-            Retry
-          </Button>
-        )}
-      </div>
-    );
-  }
+  const handleDelete = async (category: Category) => {
+    if (!window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
+      return;
+    }
 
-  if (categories.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 px-4">
-        <p className="text-sm text-muted-foreground mb-4">
-          {hasActiveFilters ? "No categories match your filters" : "No categories found"}
-        </p>
-        {hasActiveFilters && onResetFilters && (
-          <Button type="button" onClick={onResetFilters} size="sm" className="text-xs">
-            Reset Filters
+    try {
+      await deleteCategory(category.id).unwrap();
+      toast.success("Category deleted successfully");
+    } catch (error) {
+      console.error("Delete category error:", error);
+      toast.error("Failed to delete category");
+    }
+  };
+
+  const columns: Column<Category>[] = [
+    {
+      id: "name",
+      header: "Name",
+      cell: (category) => (
+        <div className="flex items-center gap-2">
+          <img
+            src={category.image}
+            alt={category.name}
+            className="w-8 h-8 rounded object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src =
+                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect fill='%23e5e7eb' width='32' height='32'/%3E%3C/svg%3E";
+            }}
+          />
+          <span className="font-medium text-foreground">{category.name}</span>
+        </div>
+      ),
+    },
+    {
+      id: "description",
+      header: "Description",
+      cell: (category) => (
+        <span className="text-muted-foreground">
+          {category.description.length > 50
+            ? `${category.description.substring(0, 50)}...`
+            : category.description}
+        </span>
+      ),
+    },
+    {
+      id: "created_at",
+      header: "Created At",
+      cell: (category) => <span className="text-muted-foreground">{category.created_at}</span>,
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (category) => (
+        <Badge
+          variant={category.is_active ? "default" : "destructive"}
+          className={
+            category.is_active
+              ? ""
+              : "bg-red-100 text-red-600 border-red-100 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900"
+          }
+        >
+          {category.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      headerClassName: "text-right",
+      className: "text-right",
+      cell: (category) => (
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => onViewDetails(category)}
+            title="View details"
+          >
+            <EyeIcon className="size-3.5" />
           </Button>
-        )}
-      </div>
-    );
-  }
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => onEdit(category)}
+            title="Edit category"
+          >
+            <EditIcon className="size-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => handleDelete(category)}
+            disabled={isDeleting}
+            title="Delete category"
+          >
+            <TrashIcon className="size-3.5" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="overflow-x-auto w-full">
-      <table className="w-full text-xs border-collapse">
-        <thead className="bg-muted border-b border-border sticky top-0">
-          <tr>
-            <th className="px-3 py-2 text-left font-semibold text-muted-foreground">Name</th>
-            <th className="px-3 py-2 text-left font-semibold text-muted-foreground">Description</th>
-            <th className="px-3 py-2 text-left font-semibold text-muted-foreground">Created At</th>
-            <th className="px-3 py-2 text-left font-semibold text-muted-foreground">Status</th>
-            <th className="px-3 py-2 text-right font-semibold text-muted-foreground">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {categories.map((category) => (
-            <CategoryRow
-              key={category.id}
-              category={category}
-              onEdit={onEdit}
-              onViewDetails={onViewDetails}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={columns}
+      data={categories}
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      onRetry={onRetry}
+      hasActiveFilters={hasActiveFilters}
+      onResetFilters={onResetFilters}
+      emptyMessage="No categories found"
+      filteredEmptyMessage="No categories match your filters"
+      page={page}
+      pages={pages}
+      total={total}
+      limit={limit}
+      onPageChange={onPageChange}
+      onLimitChange={onLimitChange}
+      showPagination={true}
+      unrounded={true}
+    />
   );
 }

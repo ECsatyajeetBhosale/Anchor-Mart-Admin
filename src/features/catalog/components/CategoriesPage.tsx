@@ -14,7 +14,6 @@ import { APP_ROUTES } from "@/lib/constants";
 import { useCategories, useCategoryFilters, usePagination } from "../hooks/useCategories";
 import type { Category } from "../types/category";
 import { CategoriesFilters } from "./CategoriesFilters";
-import { CategoriesPagination } from "./CategoriesPagination";
 import { CategoriesTable } from "./CategoriesTable";
 import { CategoryDrawer } from "./CategoryDrawer";
 import { CategoryFormDrawer } from "./CategoryFormDrawer";
@@ -97,22 +96,14 @@ export function CategoriesPage() {
             onEdit={handleEdit}
             hasActiveFilters={hasActiveFilters}
             onResetFilters={resetFilters}
+            page={page}
+            pages={pages}
+            total={total}
+            limit={limit}
+            onPageChange={goToPage}
+            onLimitChange={setPageSize}
           />
         </div>
-
-        {/* Pagination Section */}
-        {!isLoading && !isError && categories.length > 0 && (
-          <div className="mt-2">
-            <CategoriesPagination
-              page={page}
-              pages={pages}
-              total={total}
-              limit={limit}
-              onPageChange={goToPage}
-              onLimitChange={setPageSize}
-            />
-          </div>
-        )}
       </div>
 
       {/* Details Drawer */}

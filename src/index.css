@@ -189,3 +189,131 @@
     display: none; /* Chrome, Safari and Opera */
   }
 }
+
+/*
+ * ─── Sonner Toast Styles ────────────────────────────────────────────────────
+ * Custom styles for Sonner toast notifications to match the theme.
+ */
+[data-sonner-toaster] {
+  font-family: var(--font-sans);
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast] {
+  background: var(--popover) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--popover-foreground) !important;
+  border-radius: var(--radius) !important;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 0.625rem 0.875rem !important;
+  min-height: auto !important;
+  gap: 0.5rem !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="success"] {
+  background: var(--popover) !important;
+  border-color: oklch(0.7 0.15 145) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: oklch(0.7 0.15 145) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="error"] {
+  background: var(--destructive) !important;
+  border-color: var(--destructive) !important;
+  color: var(--destructive-foreground) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: var(--destructive-foreground) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="warning"] {
+  background: var(--popover) !important;
+  border-color: oklch(0.75 0.15 85) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: oklch(0.75 0.15 85) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="info"] {
+  background: var(--popover) !important;
+  border-color: oklch(0.65 0.15 240) !important;
+}
+
+/* biome-ignore lint/complexity/noImportantStyles: Required for sonner toast library override */
+[data-sonner-toast][data-type="info"] [data-icon] {
+  color: oklch(0.65 0.15 240) !important;
+}
+
+[data-sonner-toast] [data-icon] {
+  width: 1rem !important;
+  height: 1rem !important;
+  margin-top: 0.125rem !important;
+}
+
+[data-sonner-toast] [data-content] {
+  gap: 0.25rem !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+
+[data-sonner-toast] [data-description] {
+  color: var(--muted-foreground) !important;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  margin-top: 0.125rem !important;
+}
+
+[data-sonner-toast] [data-button] {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-radius: calc(var(--radius) * 0.6) !important;
+  padding: 0.25rem 0.625rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  height: auto !important;
+}
+
+[data-sonner-toast] [data-button]:hover {
+  opacity: 0.9;
+}
+
+[data-sonner-toast] [data-cancel-button] {
+  background: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  border-radius: calc(var(--radius) * 0.6) !important;
+  padding: 0.25rem 0.625rem !important;
+  font-size: 0.75rem !important;
+  height: auto !important;
+}
+
+[data-sonner-toast] [data-cancel-button]:hover {
+  opacity: 0.9;
+}
+
+[data-sonner-toast] [data-close-button] {
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+}
+
+.dark [data-sonner-toast] {
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.3),
+    0 2px 4px -2px rgb(0 0 0 / 0.3);
+}

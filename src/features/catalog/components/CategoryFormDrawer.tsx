@@ -10,7 +10,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/toast";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/lib/toast";
 import { useAddCategoryMutation, useUpdateCategoryMutation } from "../api/categoryApi";
 import type { Category, CategoryPayload } from "../types/category";
 
@@ -52,7 +53,6 @@ export function CategoryFormDrawer({
   onClose,
   onSuccess,
 }: CategoryFormDrawerProps) {
-  const { showToast } = useToast();
   const [form, setForm] = useState<CategoryFormState>(() => getFormState(category));
   const [addCategory, { isLoading: isCreating }] = useAddCategoryMutation();
   const [updateCategory, { isLoading: isUpdating }] = useUpdateCategoryMutation();
@@ -76,7 +76,7 @@ export function CategoryFormDrawer({
     event.preventDefault();
 
     if (!isValid) {
-      showToast("Please fill all required fields", "warning", 2500);
+      toast.warning("Please fill all required fields");
       return;
     }
 
@@ -85,26 +85,26 @@ export function CategoryFormDrawer({
         const updatePayload: CategoryPayload = {
           name: form.name.trim(),
           description: form.description.trim(),
-          image: form.image.trim() || "category_images/image.png",
+          image: "category_images/image.png",
           is_active: form.is_active,
         };
         await updateCategory({ id: category.id, payload: updatePayload }).unwrap();
-        showToast("Category updated successfully", "success", 2500);
+        toast.success("Category updated successfully");
       } else {
         const createPayload: CategoryPayload = {
           name: form.name.trim(),
           description: form.description.trim(),
-          image: form.image.trim() || "category_images/image.png",
+          image: "category_images/image.png",
         };
         await addCategory(createPayload).unwrap();
-        showToast("Category created successfully", "success", 2500);
+        toast.success("Category created successfully");
       }
 
       onSuccess();
       onClose();
     } catch (error) {
       console.error("Category operation error:", error);
-      showToast(`Failed to ${isEditMode ? "update" : "create"} category`, "error", 3000);
+      toast.error(`Failed to ${isEditMode ? "update" : "create"} category`);
     }
   };
 
@@ -164,16 +164,15 @@ export function CategoryFormDrawer({
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="flex items-center gap-2 text-xs text-foreground">
-                <input
-                  type="checkbox"
-                  checked={form.is_active}
-                  onChange={(event) => updateField("is_active", event.target.checked)}
-                  className="size-3.5 rounded border-input"
-                />
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="category-active" className="text-xs font-normal cursor-pointer">
                 Active category
-              </label>
+              </Label>
+              <Switch
+                id="category-active"
+                checked={form.is_active}
+                onCheckedChange={(checked) => updateField("is_active", checked)}
+              />
             </div>
           </div>
 
