@@ -19,8 +19,6 @@ export const APP_ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
-  COUPONS: "/coupons",
   NOTIFICATIONS: "/notifications",
-  LOYALTY_POINTS: "/loyalty/points",
   CATEGORIES: "/categories",
 } as const;

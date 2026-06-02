@@ -123,7 +123,7 @@ export function CategoryFormDrawer({
             </SheetDescription>
           </SheetHeader>
 
-          <div className="flex-1 space-y-5 overflow-y-auto p-6">
+          <div className="scrollbar-hide flex-1 space-y-5 overflow-y-auto p-6">
             <div className="space-y-1.5">
               <Label htmlFor="category-name" className="text-xs">
                 Name

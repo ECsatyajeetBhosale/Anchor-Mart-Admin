@@ -1,7 +1,6 @@
 export { categoryApi } from "./api/categoryApi";
 export { CategoriesFilters } from "./components/CategoriesFilters";
 export { CategoriesPage } from "./components/CategoriesPage";
-export { CategoriesPagination } from "./components/CategoriesPagination";
 export { CategoriesTable } from "./components/CategoriesTable";
 export { CategoryDrawer } from "./components/CategoryDrawer";
 export { CategoryFormDrawer } from "./components/CategoryFormDrawer";

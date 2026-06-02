@@ -4,11 +4,9 @@ import {
   BarChart3Icon,
   BoxesIcon,
   HomeIcon,
-  MedalIcon,
   ShoppingCartIcon,
   StoreIcon,
   TagsIcon,
-  TicketIcon,
   UsersIcon,
 } from "lucide-react";
 import type * as React from "react";
@@ -62,40 +60,8 @@ const data = {
       url: APP_ROUTES.CATEGORIES,
       icon: <BoxesIcon />,
     },
-    {
-      title: "Coupons",
-      url: APP_ROUTES.COUPONS,
-      icon: <TicketIcon />,
-    },
-    {
-      title: "Loyalty Points",
-      url: APP_ROUTES.LOYALTY_POINTS,
-      icon: <MedalIcon />,
-    },
   ],
   navSecondary: [],
-  projects: [
-    {
-      name: "Customers",
-      url: "#",
-      icon: <UsersIcon />,
-    },
-    {
-      name: "Inventory",
-      url: "#",
-      icon: <BoxesIcon />,
-    },
-    {
-      name: "Promotions",
-      url: "#",
-      icon: <TagsIcon />,
-    },
-    {
-      name: "Sales",
-      url: "#",
-      icon: <BarChart3Icon />,
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -122,7 +88,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

@@ -26,7 +26,7 @@ export function CategoryDrawer({ category, isOpen, onClose }: CategoryDrawerProp
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 space-y-6 overflow-y-auto p-6">
+        <div className="scrollbar-hide flex-1 space-y-6 overflow-y-auto p-6">
           {/* Image */}
           <div className="space-y-2">
             <div className="text-xs font-medium text-foreground">Image</div>
