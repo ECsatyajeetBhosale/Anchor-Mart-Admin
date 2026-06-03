@@ -46,13 +46,6 @@ export function ProductsPage() {
     console.log("Edit product", product);
   }, []);
 
-  const handleDelete = useCallback((product: Product) => {
-    // TODO: implement delete product
-    if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      console.log("Delete product", product);
-    }
-  }, []);
-
   return (
     <div className="flex flex-col h-full w-full bg-background space-y-4">
       {/* Title Header Section */}
@@ -99,7 +92,6 @@ export function ProductsPage() {
             onRetry={refetch}
             onViewDetails={handleViewDetails}
             onEdit={handleEdit}
-            onDelete={handleDelete}
             hasActiveFilters={hasActiveFilters}
             onResetFilters={resetFilters}
             page={page}

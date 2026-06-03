@@ -1,9 +1,21 @@
 import { EditIcon, EyeIcon, StarIcon, TrashIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AppTooltip } from "@/components/ui/app-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { type Column, DataTable } from "@/components/ui/data-table";
 import { toast } from "@/lib/toast";
+import { useDeleteProductMutation } from "../api/productApi";
 import type { Product } from "../types/product";
 
 interface ProductsTableProps {
@@ -14,7 +26,6 @@ interface ProductsTableProps {
   onRetry?: () => void;
   onViewDetails: (product: Product) => void;
   onEdit: (product: Product) => void;
-  onDelete: (product: Product) => void;
   hasActiveFilters?: boolean;
   onResetFilters?: () => void;
   page?: number;
@@ -33,7 +44,6 @@ export function ProductsTable({
   onRetry,
   onViewDetails,
   onEdit,
-  onDelete,
   hasActiveFilters = false,
   onResetFilters,
   page = 1,
@@ -43,6 +53,22 @@ export function ProductsTable({
   onPageChange,
   onLimitChange,
 }: ProductsTableProps) {
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    try {
+      await deleteProduct(productToDelete.id).unwrap();
+      toast.success("Product deleted successfully");
+    } catch (err) {
+      console.error("Delete product error:", err);
+      toast.error("Failed to delete product");
+    } finally {
+      setProductToDelete(null);
+    }
+  };
+
   const columns: Column<Product>[] = [
     {
       id: "product",
@@ -127,7 +153,13 @@ export function ProductsTable({
             </Button>
           </AppTooltip>
           <AppTooltip content="Delete product">
-            <Button type="button" variant="ghost" size="icon-sm" onClick={() => onDelete(product)}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setProductToDelete(product)}
+              disabled={isDeleting}
+            >
               <TrashIcon className="size-3.5" />
             </Button>
           </AppTooltip>
@@ -137,25 +169,55 @@ export function ProductsTable({
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={products}
-      isLoading={isLoading}
-      isError={isError}
-      error={error}
-      onRetry={onRetry}
-      hasActiveFilters={hasActiveFilters}
-      onResetFilters={onResetFilters}
-      emptyMessage="No products found"
-      filteredEmptyMessage="No products match your filters"
-      page={page}
-      pages={pages}
-      total={total}
-      limit={limit}
-      onPageChange={onPageChange}
-      onLimitChange={onLimitChange}
-      showPagination={true}
-      unrounded={true}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={products}
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        onRetry={onRetry}
+        hasActiveFilters={hasActiveFilters}
+        onResetFilters={onResetFilters}
+        emptyMessage="No products found"
+        filteredEmptyMessage="No products match your filters"
+        page={page}
+        pages={pages}
+        total={total}
+        limit={limit}
+        onPageChange={onPageChange}
+        onLimitChange={onLimitChange}
+        showPagination={true}
+        unrounded={true}
+      />
+
+      <AlertDialog
+        open={!!productToDelete}
+        onOpenChange={(open) => !open && setProductToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-foreground">
+                &quot;{productToDelete?.name}&quot;
+              </span>
+              ? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

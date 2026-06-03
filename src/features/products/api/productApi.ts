@@ -79,7 +79,14 @@ export const productApi = createApi({
         };
       },
     }),
+    deleteProduct: builder.mutation<void, string>({
+      query: (id) => ({
+        url: API_ENDPOINTS.CATALOG.DELETE_PRODUCT(id),
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
-export const { useGetProductsQuery } = productApi;
+export const { useGetProductsQuery, useDeleteProductMutation } = productApi;

@@ -11,5 +11,6 @@ export const API_ENDPOINTS = {
     UPDATE_CATEGORY: (id: string) => `/api/superadmin/catalog/update-category/${id}/`,
     DELETE_CATEGORY: (id: string) => `/api/superadmin/catalog/delete-category/${id}/`,
     GET_PRODUCTS: "/api/superadmin/catalog/get-products/",
+    DELETE_PRODUCT: (id: string) => `/api/superadmin/catalog/delete-product/${id}/`,
   },
 } as const;
