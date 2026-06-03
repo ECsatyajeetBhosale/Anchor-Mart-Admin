@@ -1,4 +1,15 @@
 import { EditIcon, EyeIcon, TrashIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AppTooltip } from "@/components/ui/app-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,18 +54,19 @@ export function CategoriesTable({
   onLimitChange,
 }: CategoriesTableProps) {
   const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
-  const handleDelete = async (category: Category) => {
-    if (!window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
-      return;
-    }
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete) return;
 
     try {
-      await deleteCategory(category.id).unwrap();
+      await deleteCategory(categoryToDelete.id).unwrap();
       toast.success("Category deleted successfully");
     } catch (error) {
       console.error("Delete category error:", error);
       toast.error("Failed to delete category");
+    } finally {
+      setCategoryToDelete(null);
     }
   };
 
@@ -136,7 +148,7 @@ export function CategoriesTable({
               type="button"
               variant="ghost"
               size="icon-sm"
-              onClick={() => handleDelete(category)}
+              onClick={() => setCategoryToDelete(category)}
               disabled={isDeleting}
             >
               <TrashIcon className="size-3.5" />
@@ -148,25 +160,55 @@ export function CategoriesTable({
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={categories}
-      isLoading={isLoading}
-      isError={isError}
-      error={error}
-      onRetry={onRetry}
-      hasActiveFilters={hasActiveFilters}
-      onResetFilters={onResetFilters}
-      emptyMessage="No categories found"
-      filteredEmptyMessage="No categories match your filters"
-      page={page}
-      pages={pages}
-      total={total}
-      limit={limit}
-      onPageChange={onPageChange}
-      onLimitChange={onLimitChange}
-      showPagination={true}
-      unrounded={true}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={categories}
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        onRetry={onRetry}
+        hasActiveFilters={hasActiveFilters}
+        onResetFilters={onResetFilters}
+        emptyMessage="No categories found"
+        filteredEmptyMessage="No categories match your filters"
+        page={page}
+        pages={pages}
+        total={total}
+        limit={limit}
+        onPageChange={onPageChange}
+        onLimitChange={onLimitChange}
+        showPagination={true}
+        unrounded={true}
+      />
+
+      <AlertDialog
+        open={!!categoryToDelete}
+        onOpenChange={(open) => !open && setCategoryToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-foreground">
+                &quot;{categoryToDelete?.name}&quot;
+              </span>
+              ? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
